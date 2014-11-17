@@ -4266,6 +4266,8 @@ static const unsigned char *mime_pattern[] = {
     (const unsigned char *)"\075?UTF-8?B?",
     (const unsigned char *)"\075?UTF-8?Q?",
 #endif
+	(const unsigned char *)"\075?EUC-JP?Q?",
+	(const unsigned char *)"\075?SHIFT_JIS?Q?",
     (const unsigned char *)"\075?US-ASCII?Q?",
     NULL
 };
@@ -4277,6 +4279,7 @@ nkf_char (*mime_priority_func[])(nkf_char c2, nkf_char c1, nkf_char c0) = {
 #if defined(UTF8_INPUT_ENABLE)
     w_iconv, w_iconv,
 #endif
+	e_iconv, s_iconv,
     0,
 };
 
@@ -4285,6 +4288,7 @@ static const nkf_char mime_encode[] = {
 #if defined(UTF8_INPUT_ENABLE)
     UTF_8, UTF_8,
 #endif
+    EUC_JP, SHIFT_JIS,
     ASCII,
     0
 };
@@ -4294,6 +4298,7 @@ static const nkf_char mime_encode_method[] = {
 #if defined(UTF8_INPUT_ENABLE)
     'B', 'Q',
 #endif
+	'Q', 'Q',
     'Q',
     0
 };
