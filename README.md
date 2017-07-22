@@ -1,3 +1,12 @@
+# NKF オリジナルとの違い
+Windows 版の実行ファイル作成
+nkf32.dll は x86 x64 の両方を作成
+nkf32.dll がマルチスレッドでも 動作できるように static 変数を スレッドローカル変数に変更
+nkf32.dll で print_guessed_code でファイルの改行コードを表示
+
+これらのファイルを使い NuGet パッケージ Nkf.Net を作成 https://www.nuget.org/packages/Nkf.Net
+
+
 # NAME
 
 
