@@ -480,7 +480,8 @@ Unicode から Unicode の変換の際に -x と共に指定すると、nkf を UTF 形式の変換に用
 
 元のファイルを変換結果で置き換える。
 複数のファイルを書き換えることも可能。
-元のファイルのタイムスタンプとパーミッションが保持される。
+
+B<--overwrite> では元のファイルのタイムスタンプとパーミッションが保持される。
 現在、作成日時や inode は変更されるが、将来にわたってこの実装のままである保証は無い。
 
 =item B<--guess>
@@ -727,6 +728,6 @@ https://osdn.jp/projects/nkf/
 
 Copyright (C) 1987, FUJITSU LTD. (I.Ichikawa).
 
-Copyright (C) 1996-2016, The nkf Project.
+Copyright (C) 1996-2018, The nkf Project.
 
 =cut

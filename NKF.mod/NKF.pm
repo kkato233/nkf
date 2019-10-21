@@ -1,5 +1,5 @@
 # Copyright (c) 1987, Fujitsu LTD. (Itaru ICHIKAWA).
-# Copyright (c) 1996-2015, The nkf Project.
+# Copyright (c) 1996-2018, The nkf Project.
 # All rights reserved.
 #
 # This software is provided 'as-is', without any express or implied
@@ -35,7 +35,7 @@ require DynaLoader;
 @EXPORT = qw(
 	nkf	nkf_continue	inputcode
 );
-$VERSION = '2.14';
+$VERSION = '2.15';
 
 bootstrap NKF $VERSION;
 
@@ -47,44 +47,48 @@ bootstrap NKF $VERSION;
 __END__
 
 #
-# =begin から =begin COMMAND までは Perl/NKF のドキュメント
-# =begin COMMAND から =end までは nkf コマンドのドキュメント
+# =begin FUNC から =end FUNC までは Perl/NKF のドキュメント
+# =begin COMMAND から =end COMMAND までは nkf コマンドのドキュメント
 # 
 
 =head1 NAME
 
-=begin
+=begin FUNC
 
 NKF - Perl extension for Network Kanji Filter
+
+=end FUNC
 
 =begin COMMAND
 
 nkf - Network Kanji Filter
 
-=end
+=end COMMAND
 
 =head1 SYNOPSIS
 
-=begin
+=begin FUNC
 
   use NKF;
   $output = nkf("-s",$input);
+
+=end FUNC
 
 =begin COMMAND
 
 nkf B<[-butjnesliohrTVvwWJESZxXFfmMBOcdILg]> B<[>I<file ...>B<]>
 
-=end
+=end COMMAND
 
 =head1 DESCRIPTION
 
-=begin
+=begin FUNC
 
 This is a Perl Extension version of nkf (Network Kanji Filter).
 It converts the last argument and return converted result. Conversion
 details are specified by flags before the last argument.
 
-=end
+=end FUNC
 
 B<Nkf> is a yet another kanji code converter among networks, hosts and terminals.
 It converts input kanji code to designated kanji code
@@ -99,7 +103,7 @@ For X0201 kana, SO/SI, SSO and ESC-(-I methods are supported.
 For automatic code detection, nkf assumes no X0201 kana in Shift_JIS.
 To accept X0201 in Shift_JIS, use B<-X>, B<-x> or B<-S>.
 
-multiple options are specifed as seprate strings, such as
+multiple options are specified as separate strings, such as
 
   print nkf('--ic=UTF8-MAC', '-w', $string), "\n";
 
@@ -139,13 +143,13 @@ UTF-8N.
 
 UTF-16.
 B or L gives whether Big Endian or Little Endian.
-0 gives whther put BOM or not.
+0 gives whether put BOM or not.
 
 =item B<-W32[BL][0]>
 
 UTF-32.
 B or L gives whether Big Endian or Little Endian.
-0 gives whther put BOM or not.
+0 gives whether put BOM or not.
 
 =back
 
@@ -459,7 +463,7 @@ When Unicode to Unicode conversion,
 with this and -x option, nkf can be used as UTF converter.
 (In other words, without this and -x option, nkf doesn't save some characters)
 
-When nkf converts strings that related to path, you should use this opion.
+When nkf converts strings that related to path, you should use this option.
 
 =item B<--cap-input>
 
@@ -493,7 +497,7 @@ Print nkf's help.
 
 Print nkf's version.
 
-=end
+=end COMMAND
 
 =item B<-->
 
@@ -505,14 +509,14 @@ Ignore rest of -option.
 
 Copyright (c) 1987, Fujitsu LTD. (Itaru ICHIKAWA).
 
-Copyright (c) 1996-2015, The nkf Project.
+Copyright (c) 1996-2018, The nkf Project.
 
-=begin
+=begin FUNC
 
 =head1 SEE ALSO
 
 perl(1).   nkf(1)
 
-=end
+=end FUNC
 
 =cut

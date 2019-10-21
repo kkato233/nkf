@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1987, Fujitsu LTD. (Itaru ICHIKAWA).
- * Copyright (c) 1996-2013, The nkf Project.
+ * Copyright (c) 1996-2018, The nkf Project.
  *
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -20,11 +20,11 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
  */
-#define NKF_VERSION "2.1.4"
-#define NKF_RELEASE_DATE "2015-12-12"
+#define NKF_VERSION "2.1.5"
+#define NKF_RELEASE_DATE "2018-12-15"
 #define COPY_RIGHT \
     "Copyright (C) 1987, FUJITSU LTD. (I.Ichikawa).\n" \
-    "Copyright (C) 1996-2015, The nkf Project."
+    "Copyright (C) 1996-2018, The nkf Project."
 
 #include "config.h"
 #include "nkf.h"
@@ -1111,18 +1111,26 @@ encode_fallback_java(nkf_char c)
     (*oconv)(0, '\\');
     c &= VALUE_MASK;
     if(!nkf_char_unicode_bmp_p(c)){
-	(*oconv)(0, 'U');
-	(*oconv)(0, '0');
-	(*oconv)(0, '0');
-	(*oconv)(0, bin2hex(c>>20));
-	(*oconv)(0, bin2hex(c>>16));
+        int high = (c >> 10) + NKF_INT32_C(0xD7C0);   /* high surrogate */
+        int low = (c & 0x3FF) + NKF_INT32_C(0xDC00); /* low surrogate */
+	(*oconv)(0, 'u');
+	(*oconv)(0, bin2hex(high>>12));
+	(*oconv)(0, bin2hex(high>> 8));
+	(*oconv)(0, bin2hex(high>> 4));
+	(*oconv)(0, bin2hex(high    ));
+	(*oconv)(0, '\\');
+	(*oconv)(0, 'u');
+	(*oconv)(0, bin2hex(low>>12));
+	(*oconv)(0, bin2hex(low>> 8));
+	(*oconv)(0, bin2hex(low>> 4));
+	(*oconv)(0, bin2hex(low    ));
     }else{
 	(*oconv)(0, 'u');
+	(*oconv)(0, bin2hex(c>>12));
+	(*oconv)(0, bin2hex(c>> 8));
+	(*oconv)(0, bin2hex(c>> 4));
+	(*oconv)(0, bin2hex(c    ));
     }
-    (*oconv)(0, bin2hex(c>>12));
-    (*oconv)(0, bin2hex(c>> 8));
-    (*oconv)(0, bin2hex(c>> 4));
-    (*oconv)(0, bin2hex(c    ));
     return;
 }
 
