@@ -13,13 +13,20 @@ jobs:
       uses: warrenbuckley/Setup-MSBuild@v1
 
     - name: MSBuild nkf.exe
-      run: msbuild nkf.sln /t:Rebuild /p:Configuration=Release
+      run: msbuild nkf.sln -t:Rebuild -p:Configuration=Release -p:OutDir=artifact
       shell: cmd
 
     - name: MSBuild nkf32.dll (x86)
-      run: msbuild nkf32.sln /t:Rebuild /p:Configuration=Release /p:Platform=Win32
+      run: msbuild nkf32.sln -t:Rebuild -p:Configuration=Release -p:Platform=Win32 -p:OutDir=artifact\x86
       shell: cmd
 
     - name: MSBuild  nkf32.dll (x64)
-      run: msbuild /t:Rebuild /p:Configuration=Release /p:Platform=x64
+      run: msbuild nkf32.sln -p:Configuration=Release -p:Platform=x64 -p:OutDir=artifact\x64
       shell: cmd
+
+    # Upload the binary package: https://github.com/actions/upload-artifact
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: release files
+        path: ${{ github.workspace }}\artifact

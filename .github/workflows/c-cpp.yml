@@ -1,0 +1,32 @@
+#
+# from https://github.com/actions/starter-workflows/blob/master/ci/c-cpp.yml
+#
+
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: make
+      run: make
+    - name: make perl
+      run: make perl
+    - name: make test
+      run: make test
+
+    # Upload binary package: https://github.com/actions/upload-artifact
+    - name: Upload artifact 
+      uses: actions/upload-artifact@v2
+      with:
+        name: release-files
+        path: ${{ github.workspace }}/nkf
