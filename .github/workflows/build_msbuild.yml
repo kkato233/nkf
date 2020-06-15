@@ -1,0 +1,25 @@
+name: MSBuild
+
+on: push
+
+jobs:
+  build:
+    name: MSBuild
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Setup MSBuild.exe
+      uses: warrenbuckley/Setup-MSBuild@v1
+
+    - name: MSBuild nkf.exe
+      run: msbuild nkf.sln /t:Rebuild /p:Configuration=Release
+      shell: cmd
+
+    - name: MSBuild nkf32.dll (x86)
+      run: msbuild nkf32.sln /t:Rebuild /p:Configuration=Release /p:Platform=Win32
+      shell: cmd
+
+    - name: MSBuild  nkf32.dll (x64)
+      run: msbuild /t:Rebuild /p:Configuration=Release /p:Platform=x64
+      shell: cmd
