@@ -8,6 +8,9 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v1
+    - uses: shogo82148/actions-setup-perl@v1
+          with:
+          perl-version: '5.30'
 
     - name: Setup MSBuild.exe
       uses: warrenbuckley/Setup-MSBuild@v1
@@ -23,6 +26,9 @@ jobs:
     - name: MSBuild  nkf32.dll (x64)
       run: msbuild nkf32.sln -p:Configuration=Release -p:Platform=x64 -p:OutDir=artifact\x64
       shell: cmd
+
+    - name: Test with Perl
+      run: perl test.pl nkf32.exe
 
     # Upload the binary package: https://github.com/actions/upload-artifact
     - name: Upload build artifacts
