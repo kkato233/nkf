@@ -9,8 +9,8 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - uses: shogo82148/actions-setup-perl@v1
-          with:
-          perl-version: '5.30'
+      with:
+        perl-version: '5.30'
 
     - name: Setup MSBuild.exe
       uses: warrenbuckley/Setup-MSBuild@v1
