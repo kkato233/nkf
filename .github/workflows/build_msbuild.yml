@@ -28,7 +28,7 @@ jobs:
       shell: cmd
 
     - name: Test with Perl
-      run: perl test.pl nkf.exe
+      run: perl test.pl .\artifact\nkf.exe
 
     # Upload the binary package: https://github.com/actions/upload-artifact
     - name: Upload build artifacts
