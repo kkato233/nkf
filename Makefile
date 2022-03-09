@@ -1,5 +1,7 @@
 CC = cc
-CFLAGS = -g -O2 -Wall -pedantic
+CFLAGS = -g -O2 -Wall -pedantic -fpic
+NKF32_OPTIONS = -D TOMIME -D GETKANJICODE -D FILECONVERT2
+
 # CFLAGS = -O3
 SHAR = shar 
 # SHAR = shar -T
@@ -13,17 +15,25 @@ PYTHON3 = python
 
 .PHONY: clean install test tar shar
 
+all : nkf libnkf32.so
+
 nkf : nkf.o utf8tbl.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o nkf nkf.o utf8tbl.o
 
+libnkf32.so : nkf32so.o utf8tbl.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -shared -o libnkf32.so nkf32so.o utf8tbl.o
+
 nkf.o : nkf.c nkf.h utf8tbl.h config.h
 	$(CC) $(CFLAGS) -c nkf.c
+
+nkf32so.o : nkf32so.c nkf32so.h nkf32.h nkf.h utf8tbl.h config.h nkf.c
+	$(CC) $(CFLAGS) -o nkf32so.o -c nkf.c -D LINUX_SO $(NKF32_OPTIONS)
 
 utf8tbl.o : utf8tbl.c utf8tbl.h config.h
 	$(CC) $(CFLAGS) -c utf8tbl.c
 
 clean:
-	-$(RM) nkf.o nkf nkf.exe nkf.in nkf.out nkf-$(VERSION) *~ *.bad utf8tbl.o
+	-$(RM) nkf.o nkf nkf.exe libnkf32.so nkf32so.o nkf.in nkf.out  nkf-$(VERSION) *~ *.bad utf8tbl.o
 	cd NKF.mod; if [ -f Makefile ]; then make clean; fi
 
 test:	nkf

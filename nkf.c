@@ -204,6 +204,7 @@ nkf_encoding nkf_encoding_table[] = {
     {-1,		NULL,			NULL}
 };
 
+static
 struct {
     const char *name;
     const int id;
@@ -379,7 +380,7 @@ static void mime_putc(nkf_char c);
 
 /* buffers */
 
-#if !defined(PERL_XS) && !defined(WIN32DLL)
+#if !defined(PERL_XS) && !defined(WIN32DLL) && !defined(LINUX_SO)
 Thread static unsigned char   stdibuf[IOBUF_SIZE];
 Thread static unsigned char   stdobuf[IOBUF_SIZE];
 #endif
@@ -890,7 +891,7 @@ nkf_buf_pop(nkf_buf_t *buf)
 
 /* Normalization Form C */
 #ifndef PERL_XS
-#ifdef WIN32DLL
+#if defined(WIN32DLL) || defined(LINUX_SO)
 #define fprintf dllprintf
 #endif
 
@@ -3338,7 +3339,7 @@ nkf_state_init(void)
     nkf_state->mimeout_state = 0;
 }
 
-#ifndef WIN32DLL
+#if !defined(WIN32DLL) && !defined(LINUX_SO)
 static nkf_char
 std_getc(FILE *f)
 {
@@ -3356,7 +3357,7 @@ std_ungetc(nkf_char c, ARG_UNUSED FILE *f)
     return c;
 }
 
-#ifndef WIN32DLL
+#if !defined(WIN32DLL) && !defined(LINUX_SO)
 static void
 std_putc(nkf_char c)
 {
@@ -4590,7 +4591,7 @@ get_guessed_code(void)
     return input_codename;
 }
 
-#if !defined(PERL_XS) && !defined(WIN32DLL)
+#if !defined(PERL_XS) && !defined(WIN32DLL) && !defined(LINUX_SO)
 static void
 print_guessed_code(char *filename)
 {
@@ -5702,7 +5703,7 @@ reinit(void)
     input_encoding = NULL;
     output_encoding = NULL;
     nkf_state_init();
-#ifdef WIN32DLL
+#if defined(WIN32DLL) || defined(LINUX_SO)
     reinitdll();
 #endif /*WIN32DLL*/
 }
@@ -5817,7 +5818,7 @@ module_connection(void)
    Conversion main loop. Code detection only.
  */
 
-#if !defined(PERL_XS) && !defined(WIN32DLL)
+#if !defined(PERL_XS) && !defined(WIN32DLL) && !defined(LINUX_SO)
 static nkf_char
 noconvert(FILE *f)
 {
@@ -5860,7 +5861,7 @@ kanji_convert(FILE *f)
     output_mode = ASCII;
 
     if (module_connection() < 0) {
-#if !defined(PERL_XS) && !defined(WIN32DLL)
+#if !defined(PERL_XS) && !defined(WIN32DLL) && !defined(LINUX_SO)
 	fprintf(stderr, "no output encoding given\n");
 #endif
 	return -1;
@@ -6402,7 +6403,7 @@ options(unsigned char *cp)
 		p = 0;
 	    }
 	    if (p == 0) {
-#if !defined(PERL_XS) && !defined(WIN32DLL)
+#if !defined(PERL_XS) && !defined(WIN32DLL) && !defined(LINUX_SO)
 		fprintf(stderr, "unknown long option: --%s\n", cp);
 #endif
 		return -1;
@@ -6619,7 +6620,7 @@ options(unsigned char *cp)
 		    }
 		    continue;
 		}
-#if !defined(PERL_XS) && !defined(WIN32DLL)
+#if !defined(PERL_XS) && !defined(WIN32DLL) && !defined(LINUX_SO)
 		fprintf(stderr, "unsupported long option: --%s\n", long_option[i].name);
 #endif
 		return -1;
@@ -6917,7 +6918,7 @@ options(unsigned char *cp)
 	    while(*cp && *cp++!='-');
 	    continue;
 	default:
-#if !defined(PERL_XS) && !defined(WIN32DLL)
+#if !defined(PERL_XS) && !defined(WIN32DLL) && !defined(LINUX_SO)
 	    fprintf(stderr, "unknown option: -%c\n", *(cp-1));
 #endif
 	    /* bogus option but ignored */
@@ -6927,8 +6928,10 @@ options(unsigned char *cp)
     return 0;
 }
 
-#ifdef WIN32DLL
+#if defined(WIN32DLL) 
 #include "nkf32dll.c"
+#elif defined(LINUX_SO)
+#include "nkf32so.c"
 #elif defined(PERL_XS)
 #else /* WIN32DLL */
 int
