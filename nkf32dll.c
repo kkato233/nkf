@@ -3,13 +3,13 @@
 /* URL: http://www1.ttcn.ne.jp/~kaneto */
 
 /*WIN32DLL*/
-/* ‚±‚¿‚ç‚Ìƒo[ƒWƒ‡ƒ“‚àXV‚µ‚Ä‚­‚¾‚³‚¢B */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìƒoï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½Vï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B */
 #define NKF_VERSIONW L"2.1.5"
-/* NKF_VERSION ‚ÌƒƒCƒh•¶š */
+/* NKF_VERSION ï¿½Ìƒï¿½ï¿½Cï¿½hï¿½ï¿½ï¿½ï¿½ */
 #define DLL_VERSION   "2.1.5.1 2"
-/* DLL‚ª•Ô‚· */
+/* DLLï¿½ï¿½ï¿½Ô‚ï¿½ */
 #define DLL_VERSIONW L"2.1.5.1 2"
-/* DLL‚ª•Ô‚· DLL_VERSION ‚ÌƒƒCƒh•¶š */
+/* DLLï¿½ï¿½ï¿½Ô‚ï¿½ DLL_VERSION ï¿½Ìƒï¿½ï¿½Cï¿½hï¿½ï¿½ï¿½ï¿½ */
 
 /* nkf32.dll main */
 #include <windows.h>
@@ -59,7 +59,7 @@ Thread DWORD guessdwFlags = MB_PRECOMPOSED;
 
 wchar_t *tounicode(const char *p)
 {
-Thread static wchar_t buff[GUESS];
+Thread_static wchar_t buff[GUESS];
     int sts;
 
     sts = MultiByteToWideChar(guessCodePage,guessdwFlags,p,-1,buff,sizeof(buff) / sizeof(wchar_t));
@@ -97,21 +97,21 @@ int dllprintf(FILE *fp,char *fmt,...)
 /** Network Kanji Filter. (PDS Version)
 ************************************************************************
 ** Copyright (C) 1987, Fujitsu LTD. (Itaru ICHIKAWA)
-** ˜A—æF iŠ”j•xm’ÊŒ¤‹†Š@ƒ\ƒtƒg‚RŒ¤@sì@Š 
-** iE-Mail Address: ichikawa@flab.fujitsu.co.jpj
+** ï¿½Aï¿½ï¿½ï¿½ï¿½F ï¿½iï¿½ï¿½ï¿½jï¿½xï¿½mï¿½ÊŒï¿½ï¿½ï¿½ï¿½ï¿½ï¿½@ï¿½\ï¿½tï¿½gï¿½Rï¿½ï¿½ï¿½@ï¿½sï¿½ï¿½@ï¿½ï¿½ 
+** ï¿½iE-Mail Address: ichikawa@flab.fujitsu.co.jpï¿½j
 ** Copyright (C) 1996,1998
 ** Copyright (C) 2002
-** ˜A—æF —®‹…‘åŠwî•ñHŠw‰È ‰Í–ì ^¡  mime/X0208 support
-** iE-Mail Address: kono@ie.u-ryukyu.ac.jpj
-** ˜A—æF COW for DOS & Win16 & Win32 & OS/2
-** iE-Mail Address: GHG00637@niftyserve.or.pj
+** ï¿½Aï¿½ï¿½ï¿½ï¿½F ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½wï¿½ï¿½ï¿½Hï¿½wï¿½ï¿½ ï¿½Í–ï¿½ ï¿½^ï¿½ï¿½  mime/X0208 support
+** ï¿½iE-Mail Address: kono@ie.u-ryukyu.ac.jpï¿½j
+** ï¿½Aï¿½ï¿½ï¿½ï¿½F COW for DOS & Win16 & Win32 & OS/2
+** ï¿½iE-Mail Address: GHG00637@niftyserve.or.pï¿½j
 **
-**    ‚±‚Ìƒ\[ƒX‚Ì‚¢‚©‚È‚é•¡ÊC‰ü•ÏCC³‚à‹–‘ø‚µ‚Ü‚·B‚½‚¾‚µA
-**    ‚»‚ÌÛ‚É‚ÍA’N‚ªvŒ£‚µ‚½‚ğ¦‚·‚±‚Ì•”•ª‚ğc‚·‚±‚ÆB
-**    Ä”z•z‚âG‚Ì•t˜^‚È‚Ç‚Ì–â‚¢‡‚í‚¹‚à•K—v‚ ‚è‚Ü‚¹‚ñB
-**    ‰c—˜—˜—p‚àã‹L‚É”½‚µ‚È‚¢”ÍˆÍ‚Å‹–‰Â‚µ‚Ü‚·B
-**    ƒoƒCƒiƒŠ‚Ì”z•z‚ÌÛ‚É‚Íversion message‚ğ•Û‘¶‚·‚é‚±‚Æ‚ğğŒ‚Æ‚µ‚Ü‚·B
-**    ‚±‚ÌƒvƒƒOƒ‰ƒ€‚É‚Â‚¢‚Ä‚Í“Á‚É‰½‚Ì•ÛØ‚à‚µ‚È‚¢Aˆ«‚µ‚©‚ç‚¸B
+**    ï¿½ï¿½ï¿½Ìƒ\ï¿½[ï¿½Xï¿½Ì‚ï¿½ï¿½ï¿½ï¿½È‚é•¡ï¿½ÊCï¿½ï¿½ï¿½ÏCï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½Bï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½A
+**    ï¿½ï¿½ï¿½ÌÛ‚É‚ÍAï¿½Nï¿½ï¿½ï¿½vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì•ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½cï¿½ï¿½ï¿½ï¿½ï¿½ÆB
+**    ï¿½Ä”zï¿½zï¿½ï¿½Gï¿½ï¿½ï¿½Ì•tï¿½^ï¿½È‚Ç‚Ì–â‚¢ï¿½ï¿½ï¿½í‚¹ï¿½ï¿½ï¿½Kï¿½vï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½B
+**    ï¿½cï¿½ï¿½ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½Lï¿½É”ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ÍˆÍ‚Å‹ï¿½ï¿½Â‚ï¿½ï¿½Ü‚ï¿½ï¿½B
+**    ï¿½oï¿½Cï¿½iï¿½ï¿½ï¿½Ì”zï¿½zï¿½ÌÛ‚É‚ï¿½version messageï¿½ï¿½Û‘ï¿½ï¿½ï¿½ï¿½é‚±ï¿½Æ‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½Ü‚ï¿½ï¿½B
+**    ï¿½ï¿½ï¿½Ìƒvï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½É‚Â‚ï¿½ï¿½Ä‚Í“ï¿½ï¿½É‰ï¿½ï¿½Ì•ÛØ‚ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ç‚¸ï¿½B
 **
 **    Everyone is permitted to do anything on this program 
 **    including copying, modifying, improving,
@@ -122,10 +122,10 @@ int dllprintf(FILE *fp,char *fmt,...)
 **    THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE.
 ***********************************************************************/
 
-Thread static const unsigned char *cin = NULL;
-Thread static int nin = -1;
-Thread static int ninmax = -1;
-Thread static int std_getc_mode = 1;
+Thread_static const unsigned char *cin = NULL;
+Thread_static int nin = -1;
+Thread_static int ninmax = -1;
+Thread_static int std_getc_mode = 1;
 
 int 
 std_getc(f)
@@ -157,11 +157,11 @@ FILE *f;
     return EOF;
 }
 
-Thread static FILE *fout = NULL;
-Thread static unsigned char *cout = NULL;
-Thread static int nout = -1;
-Thread static int noutmax = -1;
-Thread static int std_putc_mode = 1;
+Thread_static FILE *fout = NULL;
+Thread_static unsigned char *cout = NULL;
+Thread_static int nout = -1;
+Thread_static int noutmax = -1;
+Thread_static int std_putc_mode = 1;
 
 void 
 std_putc(c)
@@ -248,7 +248,7 @@ print_guessed_codeW (filename)
 #endif /*UNICODESUPPORT*/
 
 /**
- ** ƒpƒbƒ`§ìÒ
+ ** ï¿½pï¿½bï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½
  **  void@merope.pleiades.or.jp (Kusakabe Youichi)
  **  NIDE Naoyuki <nide@ics.nara-wu.ac.jp>
  **  ohta@src.ricoh.co.jp (Junn Ohta)
@@ -292,11 +292,11 @@ int WINAPI DllEntryPoint(HINSTANCE hinst,unsigned long reason,void* lpReserved)
 }
 #endif /* DLLDBG @@*/
 
-Thread static LPSTR nkfverA = NKF_VERSION;
-Thread static LPSTR dllverA = DLL_VERSION;
+Thread_static LPSTR nkfverA = NKF_VERSION;
+Thread_static LPSTR dllverA = DLL_VERSION;
 #ifdef UNICODESUPPORT
-Thread static LPWSTR nkfverW = NKF_VERSIONW;
-Thread static LPWSTR dllverW = DLL_VERSIONW;
+Thread_static LPWSTR nkfverW = NKF_VERSIONW;
+Thread_static LPWSTR dllverW = DLL_VERSIONW;
 #endif /*UNICODESUPPORT*/
 
 BOOL scp(LPSTR s,LPSTR t,DWORD n)
@@ -356,7 +356,7 @@ BOOL WINAPI GetNkfVersionSafeW(LPWSTR verStr,DWORD nBufferLength /*in TCHARs*/,L
 #endif /*UNICODESUPPORT*/
 }
 
-Thread static LPSTR optStr0 = NULL;
+Thread_static LPSTR optStr0 = NULL;
 
 int CALLBACK SetNkfOption(LPSTR optStr)
 {
@@ -388,7 +388,7 @@ int findspace(const char* str)
 	}
 	return find_n;
 }
-// ƒIƒvƒVƒ‡ƒ“‚ª ‹ó”’‚Å‹æØ‚ç‚ê‚Ä‚¢‚éê‡‚É options ‚ğ•¡”ŒÄ‚Ño‚·
+// ï¿½Iï¿½vï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ó”’‚Å‹ï¿½Ø‚ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ê‡ï¿½ï¿½ options ï¿½ğ•¡ï¿½ï¿½Ä‚Ñoï¿½ï¿½
 void callOptions()
 {
 	char *work = strdup(optStr0);
@@ -401,12 +401,12 @@ void callOptions()
 	int i = 0;
 	while (i < len)
 	{
-		// •¶š‚ğ’T‚·
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Tï¿½ï¿½
 		if (work[i] != '\0') {
-			// options ŒÄ‚Ño‚µ
+			// options ï¿½Ä‚Ñoï¿½ï¿½
 			options(&work[i]);
 
-			// •¶š‚ÌI’[‚ğ’T‚·
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ÌIï¿½[ï¿½ï¿½Tï¿½ï¿½
 			while (work[i] != '\0' && i < len) {
 				i++;
 			}
@@ -418,9 +418,9 @@ void callOptions()
 	free(work);
 }
 
-// ƒvƒƒZƒX‹N“®‚É‰Šú’l‚Éİ’è‚³‚ê‚é’l‚ğ‰Šúİ’è‚·‚éB
-// dll ‚ğg‚Á‚½ƒR[ƒh•ÏŠ·‚ÍAƒtƒ‰ƒO•Ï”‚ª‰Šú‰»‚³‚ê‚¸‚É
-// —\‘zŠO‚Ì“®‚«‚ğ‚·‚éê‡‚ª‚ ‚éŒ»Û‚ÌC³—p
+// ï¿½vï¿½ï¿½ï¿½Zï¿½Xï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½Éï¿½ï¿½ï¿½ï¿½lï¿½Éİ’è‚³ï¿½ï¿½ï¿½lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ’è‚·ï¿½ï¿½B
+// dll ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Rï¿½[ï¿½hï¿½ÏŠï¿½ï¿½ÍAï¿½tï¿½ï¿½ï¿½Oï¿½Ïï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‚¸ï¿½ï¿½
+// ï¿½\ï¿½zï¿½Oï¿½Ì“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½ï¿½ï¿½ï¿½ï¿½éŒ»ï¿½Û‚ÌCï¿½ï¿½ï¿½p
 void reinit_dll()
 {
 #ifdef UTF8_INPUT_ENABLE
@@ -435,7 +435,7 @@ void options0(void)
     reinit();
 	reinit_dll();
     if ( optStr0 != NULL ) {
-		// option ‚Ì’†‚É ‹ó”’‚ª‚ ‚Á‚½ê‡ options ‚ğ•ªŠ„‚µ‚ÄŒÄ‚Ño‚·
+		// option ï¿½Ì’ï¿½ï¿½ï¿½ ï¿½ó”’‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ options ï¿½ğ•ªŠï¿½ï¿½ï¿½ï¿½ÄŒÄ‚Ñoï¿½ï¿½
 		if (findspace(optStr0) > 0) {
 			callOptions();
 		}
@@ -531,7 +531,7 @@ void CALLBACK ToMime(LPSTR outStr ,LPCSTR inStr)
 int CALLBACK NkfGetKanjiCode(VOID)
 {
     int iCode=0;
-    /* if(iconv == s_iconv)iCode=0; */ /* 0:ƒVƒtƒgJIS */
+    /* if(iconv == s_iconv)iCode=0; */ /* 0:ï¿½Vï¿½tï¿½gJIS */
     if(iconv == w_iconv)iCode=3; /* UTF-8 */
     else if(iconv == w_iconv16){
         if(input_endian == ENDIAN_BIG)iCode=5; /* 5:UTF-16BE */
@@ -826,7 +826,7 @@ BOOL WINAPI GetNkfGuessW(LPWSTR outStr,DWORD nBufferLength /*in TCHARs*/,LPDWORD
 #endif /*UNICODESUPPORT*/
 }
 
-Thread static struct {
+Thread_static struct {
 DWORD size;
 LPCSTR copyrightA;
 LPCSTR versionA;
@@ -878,7 +878,7 @@ unsigned char buff[65536];
 unsigned char buff2[65536];
 unsigned char buff3[65536];
 unsigned char buff4[65536];
-char *code[] = {"ƒVƒtƒgJIS","EUC","ISO-2022-JP","UTF-8","UTF-16LE","UTF-16BE"};
+char *code[] = {"ï¿½Vï¿½tï¿½gJIS","EUC","ISO-2022-JP","UTF-8","UTF-16LE","UTF-16BE"};
 
     int n;
     BOOL sts;

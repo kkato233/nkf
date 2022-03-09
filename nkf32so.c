@@ -75,10 +75,10 @@ int dllprintf(FILE *fp,const char *fmt,...)
 **    THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE.
 ***********************************************************************/
 
-Thread static const unsigned char *cin = NULL;
-Thread static int nin = -1;
-Thread static int ninmax = -1;
-Thread static int std_getc_mode = 1;
+Thread_static const unsigned char *cin = NULL;
+Thread_static int nin = -1;
+Thread_static int ninmax = -1;
+Thread_static int std_getc_mode = 1;
 
 int 
 std_getc(f)
@@ -110,11 +110,11 @@ FILE *f;
     return EOF;
 }
 
-Thread static FILE *fout = NULL;
-Thread static unsigned char *cout = NULL;
-Thread static int nout = -1;
-Thread static int noutmax = -1;
-Thread static int std_putc_mode = 1;
+Thread_static FILE *fout = NULL;
+Thread_static unsigned char *cout = NULL;
+Thread_static int nout = -1;
+Thread_static int noutmax = -1;
+Thread_static int std_putc_mode = 1;
 
 void 
 std_putc(c)
@@ -226,7 +226,7 @@ BOOL WINAPI GetNkfVersionSafe(LPSTR verStr,DWORD nBufferLength /*in TCHARs*/,LPD
     return scp(verStr,dllverA,nBufferLength);
 }
 
-Thread static LPSTR optStr0 = NULL;
+Thread_static LPSTR optStr0 = NULL;
 
 int CALLBACK SetNkfOption(LPSTR optStr)
 {
