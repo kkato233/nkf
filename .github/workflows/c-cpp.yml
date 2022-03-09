@@ -29,4 +29,6 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: release-files
-        path: ${{ github.workspace }}/nkf
+        path: |
+            ${{ github.workspace }}/nkf
+            ${{ github.workspace }}/libnkf32.so
