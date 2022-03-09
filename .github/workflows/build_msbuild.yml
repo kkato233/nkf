@@ -14,18 +14,26 @@ jobs:
 
     - name: Setup MSBuild.exe
       uses: warrenbuckley/Setup-MSBuild@v1
-
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+    
     - name: MSBuild nkf.exe
       run: msbuild nkf.sln -t:Rebuild -p:Configuration=Release -p:OutDir=artifact
       shell: cmd
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
 
     - name: MSBuild nkf32.dll (x86)
       run: msbuild nkf32.sln -t:Rebuild -p:Configuration=Release -p:Platform=Win32 -p:OutDir=artifact\x86
       shell: cmd
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
 
     - name: MSBuild  nkf32.dll (x64)
       run: msbuild nkf32.sln -p:Configuration=Release -p:Platform=x64 -p:OutDir=artifact\x64
       shell: cmd
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
 
     - name: Test with Perl
       run: perl test.pl .\artifact\nkf.exe
