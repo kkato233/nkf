@@ -17,6 +17,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
+    - name: Install gcc-multilib
+      run: |
+          sudo apt update
+          sudo apt install gcc-multilib -y
     - name: make
       run: make
     - name: make perl
