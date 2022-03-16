@@ -37,6 +37,8 @@ jobs:
       run: |
         make clean
         make -f Makefile_32
+    - name: make test
+      run: make test
     - name: copy x86
       run: |
         mkdir x86
