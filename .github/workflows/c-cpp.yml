@@ -23,6 +23,20 @@ jobs:
       run: make perl
     - name: make test
       run: make test
+    - name: copy x64
+      run: |
+        mkdir x64
+        cp nkf x64
+        cp libnkf32.so x64
+    - name: make x86
+      run: |
+        make clean
+        make -f Makefile_32
+    - name: copy x86
+      run: |
+        mkdir x86
+        cp nkf x86
+        cp libnkf32.so x86
 
     # Upload binary package: https://github.com/actions/upload-artifact
     - name: Upload artifact 
@@ -30,5 +44,7 @@ jobs:
       with:
         name: release-files
         path: |
-            ${{ github.workspace }}/nkf
-            ${{ github.workspace }}/libnkf32.so
+            ${{ github.workspace }}/x86/nkf
+            ${{ github.workspace }}/x86/libnkf32.so
+            ${{ github.workspace }}/x64/nkf
+            ${{ github.workspace }}/x64/libnkf32.so
