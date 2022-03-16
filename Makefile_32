@@ -1,0 +1,97 @@
+CC = cc
+CFLAGS = -g -O2 -Wall -pedantic -fpic
+NKF32_OPTIONS = -D TOMIME -D GETKANJICODE -D FILECONVERT2
+
+# CFLAGS = -O3
+SHAR = shar 
+# SHAR = shar -T
+PERL = perl
+RM = rm -rf
+VERSION = 2.1.5
+MKDIR = $(shell if pwd | xargs mkdir 2>/dev/null -p ; then echo "mkdir -p"; else echo "mkdir"; fi)
+prefix = /usr/local
+PYTHON2 = python
+PYTHON3 = python
+
+.PHONY: clean install test tar shar
+
+all : nkf libnkf32.so
+
+nkf : nkf.o utf8tbl.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o nkf nkf.o utf8tbl.o -m32
+
+libnkf32.so : nkf32so.o utf8tbl.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -shared -o libnkf32.so nkf32so.o utf8tbl.o -m32
+
+nkf.o : nkf.c nkf.h utf8tbl.h config.h
+	$(CC) $(CFLAGS) -c nkf.c -m32
+
+nkf32so.o : nkf32so.c nkf32so.h nkf32.h nkf.h utf8tbl.h config.h nkf.c
+	$(CC) $(CFLAGS) -o nkf32so.o -c nkf.c -D LINUX_SO $(NKF32_OPTIONS) -m32
+
+utf8tbl.o : utf8tbl.c utf8tbl.h config.h
+	$(CC) $(CFLAGS) -c utf8tbl.c -m32
+
+clean:
+	-$(RM) nkf.o nkf nkf.exe libnkf32.so nkf32so.o nkf.in nkf.out  nkf-$(VERSION) *~ *.bad utf8tbl.o
+	cd NKF.mod; if [ -f Makefile ]; then make clean; fi
+
+test:	nkf
+	$(PERL) test.pl
+
+perl:
+	( cd NKF.mod ; \
+	$(PERL) Makefile.PL  ; \
+	make ; \
+	make test )
+
+python2:
+	( cd NKF.python2 ; \
+	$(PYTHON2) setup.py build )
+
+python3:
+	( cd NKF.python3 ; \
+	$(PYTHON3) setup.py build )
+
+install: install-main install-man install-man-ja
+
+install-main:
+	-$(MKDIR) $(prefix)/bin
+	cp -f nkf $(prefix)/bin/
+
+install-man:
+	-$(MKDIR) $(prefix)/man
+	-$(MKDIR) $(prefix)/man/man1
+	cp -f nkf.1 $(prefix)/man/man1/
+
+install-man-ja:
+	-$(MKDIR) $(prefix)/man/ja
+	-$(MKDIR) $(prefix)/man/ja/man1
+	cp -f nkf.1j $(prefix)/man/ja/man1/nkf.1
+
+shar:
+	-$(MKDIR) nkf-$(VERSION)
+	-$(MKDIR) nkf-$(VERSION)/NKF.mod
+	for file in  `cat MANIFEST`;  \
+	do  \
+	    nkf -j -m0 $$file > nkf-$(VERSION)/$$file ; \
+	done 
+	echo "#!/bin/sh" >nkf-$(VERSION).shar
+	echo "mkdir nkf-$(VERSION)" >>nkf-$(VERSION).shar
+	echo "mkdir nkf-$(VERSION)/NKF.mod" >>nkf-$(VERSION).shar
+	echo "cd nkf-$(VERSION)" >>nkf-$(VERSION).shar
+	( cd nkf-$(VERSION) ; $(SHAR)  `cat ../MANIFEST` ) >> nkf-$(VERSION).shar
+	-$(RM) nkf-$(VERSION)
+
+tar:
+	-$(MKDIR) nkf-$(VERSION)
+	-$(MKDIR) nkf-$(VERSION)/NKF.mod
+	-$(MKDIR) nkf-$(VERSION)/NKF.python2
+	-$(MKDIR) nkf-$(VERSION)/NKF.python3
+	-$(MKDIR) nkf-$(VERSION)/man
+	for file in  `cat MANIFEST`;  \
+	do  \
+	    cp $$file nkf-$(VERSION)/$$file ; \
+	done 
+	tar cf nkf-$(VERSION).tar nkf-$(VERSION)
+	-$(RM) nkf-$(VERSION)
