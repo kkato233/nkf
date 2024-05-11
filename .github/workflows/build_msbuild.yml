@@ -7,13 +7,13 @@ jobs:
     name: MSBuild
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
     - uses: shogo82148/actions-setup-perl@v1
       with:
         perl-version: '5.30'
 
     - name: Setup MSBuild.exe
-      uses: warrenbuckley/Setup-MSBuild@v1
+      uses: microsoft/Setup-MSBuild@v2
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
     
@@ -40,7 +40,7 @@ jobs:
 
     # Upload the binary package: https://github.com/actions/upload-artifact
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: release files
         path: ${{ github.workspace }}\artifact
