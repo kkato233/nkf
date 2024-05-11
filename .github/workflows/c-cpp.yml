@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Install gcc-multilib
       run: |
@@ -47,7 +47,7 @@ jobs:
 
     # Upload binary package: https://github.com/actions/upload-artifact
     - name: Upload artifact 
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: release-files
         path: |
