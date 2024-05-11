@@ -126,8 +126,11 @@ unlink "nkf.out";
 
 if ($error_count > 1) {
     printf("%d errors were found.\n", $error_count);
+    exit(1);
 } elsif ($error_count == 1) {
     printf("1 error was found.\n");
+    exit(1);
 } else {
     printf("All tests are succeeded.\n");
+    exit(0);
 }

@@ -1,8 +1,17 @@
+# NKF オリジナルとの違い 
+Windows 版の実行ファイル作成  
+nkf32.dll は x86 x64 の両方を作成  
+nkf32.dll がマルチスレッドでも 動作できるように static 変数を スレッドローカル変数に変更  
+nkf32.dll で print_guessed_code でファイルの改行コードを表示  
+
+これらのファイルを使い NuGet パッケージ Nkf.Net を作成 https://www.nuget.org/packages/Nkf.Net
+
+
 # NAME
 
 
 
-nkf - Network Kanji Filter
+nkf - ネットワーク用漢字コード変換フィルタ
 
 
 
@@ -18,374 +27,313 @@ nkf __[-butjnesliohrTVvwWJESZxXFfmMBOcdILg]__ __[___file ...___]__
 
 
 
-__Nkf__ is a yet another kanji code converter among networks, hosts and terminals.
-It converts input kanji code to designated kanji code
-such as ISO-2022-JP, Shift_JIS, EUC-JP, UTF-8, UTF-16 or UTF-32.
+__Nkf__ はネットワークでメールやニュースの読み書きをするために作られた、漢字コードの変換フィルタである。
 
-One of the most unique faculty of __nkf__ is the guess of the input kanji encodings.
-It currently recognizes ISO-2022-JP, Shift_JIS, EUC-JP, UTF-8, UTF-16 and UTF-32.
-So users needn't set the input kanji code explicitly.
+この __nkf__ の特徴としては、入力漢字コード系の統計的な自動認識機能がある。
+このため、利用者は、入力漢字コード系が何であるかを知らなくても、
+出力漢字コード系のみ指定すれば良いことになる。
+ただ、この判定機構は、理論的には完全ではないが、通常のニュースやメールのメッセージに       ついては確実に動作する安全なものにはなっている。
 
-By default, X0201 kana is converted into X0208 kana.
-For X0201 kana, SO/SI, SSO and ESC-(-I methods are supported.
-For automatic code detection, nkf assumes no X0201 kana in Shift_JIS.
-To accept X0201 in Shift_JIS, use __-X__, __-x__ or __-S__.
+現在、**nkf**が認識できる入力の漢字コード系は、いわゆる <code>JIS</code> コード (ISO-2022-JP に基づくも
+の)、Shift_JIS (MS 漢字コード)、 日本語 EUC (AT&T コード)、UTF-8、UTF-16 のいずれかである。
+出力する漢字コード系も、これらである。
+入力は、ファイルを指定しなければ、標準入力となる。
+出力は標準出力である。
 
 # OPTIONS
 
-- __-J -S -E -W -W16 -W32 -j -s -e -w -w16 -w32__
+<code>
+        指定できるオプションは、以下の通り。 -mu のように続けることができる。
 
-Specify input and output encodings. Upper case is input.
-cf. --ic and --oc.
+       -j  JIS コードを出力する。
 
-    - __-J__
+       -e  EUC コードを出力する。
 
-    ISO-2022-JP (JIS code).
+       -s  Shift_JIS コードを出力する。
 
-    - __-S__
+       -w -w8[0] -w16[BL][0]
+           Unicode を出力する。
 
-    Shift_JIS and JIS X 0201 kana.
-    EUC-JP is recognized as X0201 kana. Without __-x__ flag,
-    JIS X 0201 Katakana (a.k.a.halfwidth kana) is converted into JIS X 0208.
-    If you use Windows, see Windows-31J (CP932).
+           -w -w80
+               UTF8 コードを出力する。 (BOM 無し)
 
-    - __-E__
+           -w8 UTF8 コードを出力する。
 
-    EUC-JP.
+           -w16 -w16B0
+               UTF16 コードを出力する。 (Big Endian / BOM 無し)
 
-    - __-W__
+           -w16B
+               UTF16 コードを出力する。 (Big Endian / BOM 有り)
 
-    UTF-8N.
+           -w16L
+               UTF16 コードを出力する。 (Little Endian / BOM 有り)
 
-    - __-W16[BL][0]__
+           -w16L0
+               UTF16 コードを出力する。 (Little Endian / BOM 無し)
 
-    UTF-16.
-    B or L gives whether Big Endian or Little Endian.
-    0 gives whether put BOM or not.
+       -m[BQSN0]
+           MIME を解読する。(デフォルト) ISO-2022-JP (B encode) と ISO-8859-1 (Q encode) のみを解
+           読する。 ISO-8859-1 (Latin-1) を解読する時は、-l フラグも必要である。 -m0 では MIME を
+           解読しない。 -mB, -mQ では、BASE64, Q encode されているものとして処理する。
 
-    - __-W32[BL][0]__
+           -mB MIME base64 stream を解読する。 ヘッダなどは取り除くこと。
 
-    UTF-32.
-    B or L gives whether Big Endian or Little Endian.
-    0 gives whether put BOM or not.
+           -mQ MIME quoted stream を解読する。
 
-- __-b -u__
+           -mS MIME のチェックを厳しくする (デフォルト)
 
-Output is buffered (DEFAULT), Output is unbuffered.
+           -mN MIME のチェックを緩くする
 
-- __-t__
+           -m0 MIME を解読しない。
 
-No conversion.
+           -mS は、宣言の内容と、その後に続く encoded-text の整合性をチェックする。 -mN は、改行
+           で切られた MIME なども解読する。解読が止まらないこともある。
 
-- __-i[@B]__
+       -M[BQ]
+           MIME に変換する。
 
-Specify the escape sequence for JIS X 0208.
+           -M  ヘッダ形式に変換する
 
-    - __-i@__
+           -MB base64 stream に変換する
 
-    Use ESC ( @. (JIS X 0208-1978)
+           -MQ Quoted stream に変換する
 
-    - __-iB__
+       -J -E -S -W
+           期待される入力コードの性質を指定する。
 
-    Use ESC ( B. (JIS X 0208-1983/1990 DEFAULT)
+           -J  ISO-2022-JP を仮定する。
 
-- __-o[BJ]__
+           -E  日本語 EUC (AT&T) を仮定する。
 
-Specify the escape sequence for US-ASCII/JIS X 0201 Roman. (DEFAULT B)
+           -S  Shift_JIS を仮定する。 いわゆる半角カナ (JIS X 0201 片仮名) も受け入れる。
 
-- __-r__
+           -W  UTF-8 を仮定する。
 
-{de/en}crypt ROT13/47
+           -W8 UTF-8 を仮定する。
 
-- __-h[123] --hiragana --katakana --katakana-hiragana__
+           -W16
+               UTF-16 (Little Endian)を仮定する。
 
-Hiragana/Katakana conversion
+           -W16B
+               UTF-16 (Big Endian)を仮定する。
 
-    - __-h1 --hiragana__
+           -W16L
+               UTF-16 (Little Endian)を仮定する。
 
-    Katakana to Hiragana conversion.
+       -x  通常おこなわれる、いわゆる半角カナ (JIS X 0201 片仮名) からいわゆる全角カナ (JIS X
+           0208 片仮名) への変換を行わず、半角カナを保存する。 入力は、Shift_JIS の 1byte カ
+           ナ、SO/SI、ESC-(-I, SSO を受け付ける。 出力は、日本語 EUC 中では SSO、JIS コード中では
+           ESC-(-I をデフォルトで用いる。
 
-    - __-h2 --katakana__
+       -X  いわゆる半角カナ (JIS X 0201 片仮名) を いわゆる全角カナ (JIS X 0208 片仮名) へと変換
+           する。
 
-    Hiragana to Katakana conversion.
+       -B  壊れた (Broken) JIS コード。 ESC がなくなったと仮定する。
 
-    - __-h3 --katakana-hiragana__
+           -B1 ESC-(, ESC-$ のあとのコードを問わない
 
-    Katakana to Hiragana and Hiragana to Katakana conversion.
+           -B2 改行のあとに強制的に ASCII に戻す
 
-- __-T__
+       -f[m[-n]]
+           一行 m 文字になるように、マージンを n として簡単な整形をおこなう。 デフォルトは文字数
+           は 60、マージンは 10 である。
 
-Text mode output (MS-DOS)
+       -Z[0-3]
+           JIS X 0208 英数字と若干の記号を ASCII に変換する。 つまり、全角を半角に変換する。
 
-- __-f[_m_ [- _n_]]__
+           -Z -Z0
+               Convert X0208 alphabet to ASCII.
 
-Folding on _m_ length with _n_ margin in a line.
-Without this option, fold length is 60 and fold margin is 10.
+           -Z1 JIS X 0208 和字間隔を ASCII space 一つに変換する。
 
-- __-F__
+           -Z2 JIS X 0208 和字間隔を ASCII space 二つに変換する。
 
-New line preserving line folding.
+           -Z3 ＞、＜、”、＆、を &gt;、&lt;、&quot;、&amp; に変換する。
 
-- __-Z[0-3]__
+       -b  バッファリング出力を行う。(デフォルト)
 
-Convert X0208 alphabet (Fullwidth Alphabets) to ASCII.
+       -u  出力時に、バッファリングしない。 ssh localhost | nkf -u というように使う。
 
-    - __-Z -Z0__
+       -t  何もしない。
 
-    Convert X0208 alphabet to ASCII.
+       -I  ISO-2022-JP 以外の漢字コードを〓に変換。
 
-    - __-Z1__
+       -i[@B]
+           JIS 漢字を指示するシーケンスを指定する。
 
-    Convert X0208 kankaku to single ASCII space.
+           -i@ JIS X 0208-1978 を用いる。
 
-    - __-Z2__
+           -iB JIS X 0208-1983/1990 を用いる。
 
-    Convert X0208 kankaku to double ASCII spaces.
+       -o[BJH]
+           1 バイト英数文字セットを指示するシーケンスを指定する。
 
-    - __-Z3__
+           -oB 1 バイト英数文字セットとして US-ASCII を用いる。
 
-    Replacing fullwidth >, <, ", & into '&gt;', '&lt;', '&quot;', '&amp;' as in HTML.
+           -oJ 1 バイト英数文字セットとして JIS X 0201 Roman を用いる。
 
-- __-X -x__
+           -oH ESC ( H は初期の JUNET コードでのみ用いられたもので、現在は使ってはならない。
 
-With __-X__ or without this option, X0201 is converted into X0208 Kana.
-With __-x__, try to preserve X0208 kana and do not convert X0201 kana to X0208.
-In JIS output, ESC-(-I is used. In EUC output, SS2 is used.
+       -r  ROT13/47 の変換をする。
 
-- __-B[0-2]__
+       -g  自動判別の結果を出力します。
 
-Assume broken JIS-Kanji input, which lost ESC.
-Useful when your site is using old B-News Nihongo patch.
+       -T  テキストモードで出力する。(MS-DOS 上でのみ効力を持つ)
 
-    - __-B1__
+       -l  0x80-0xfe のコードを ISO-8859-1 (Latin-1) として扱う。 JIS コードアウトプットとの組合
+           せみのみ有効。 -s, -e, -x とは両立しない。
 
-    allows any chars after ESC-( or ESC-$.
+       -O  ファイルに出力する。 UNIX では不要な機能だが Windows や MSDOS では必要らしい。 直後の
+           引き数でなく、最後のファイル名が出力ファイル名となり上書きされてしまうので注意。 ファ
+           イル名がない場合は nkf.out。
 
-    - __-B2__
+       -L[uwm] -d -c
+           改行コードを変換する。
 
-    force ASCII after NL.
+           -Lu -d
+               unix (LF)
 
-- __-I__
+           -Lw -c
+               windows (CRLF)
 
-Replacing non iso-2022-jp char into a geta character
-(substitute character in Japanese).
+           -Lm mac (CR)
 
-- __-m[BQN0]__
+           デフォルトでは変換しない。
 
-MIME ISO-2022-JP/ISO8859-1 decode. (DEFAULT)
-To see ISO8859-1 (Latin-1) -l is necessary.
+       --ic=<input_codeset --oc=<output_codeset>>
+           入力・出力の漢字コード系を指定します。
 
-    - __-mB__
+           ISO-2022-JP
+               いわゆる JIS コード。-j, -J と同じ。
 
-    Decode MIME base64 encoded stream. Remove header or other part before
-    conversion. 
+           ISO-2022-JP-1
+               RFC 2237 に定められた形式。 JIS X 0212 を含む。
 
-    - __-mQ__
+           ISO-2022-JP-3
+               RFC 2237 に定められた形式。 JIS X 0213 を含む。
 
-    Decode MIME quoted stream. '_' in quoted stream is converted to space.
+           EUC-JP
+               EUC コード。-e, -E と同じ。
 
-    - __-mN__
+           EUC-JISX0213
+               文字集合に JIS X 0213:2000 を用いた EUC-JP。
 
-    Non-strict decoding.
-    It allows line break in the middle of the base64 encoding.
+           EUC-JIS-2004
+               文字集合に JIS X 0213:2004 を用いた EUC-JP。
 
-    - __-m0__
+           eucJP-ascii
+               オープングループ日本ベンダ協議会が定義した eucJP-ascii。 -x が暗黙のうちに指定され
+               る。
 
-    No MIME decode.
+           eucJP-ms
+               オープングループ日本ベンダ協議会が定義した euc-JPms。 -x が暗黙のうちに指定され
+               る。
 
-- __-M__
+           CP51932
+               Micorosft Code Page 51932。 -x が暗黙のうちに指定される。
 
-MIME encode. Header style. All ASCII code and control characters are intact.
+           Shift_JIS
+               Shift_JIS。 -s, -S と同じ。
 
-    - __-MB__
+           Shift_JISX0213
+               文字集合に JIS X 0213:2000 を用いた Shift_JIS。
 
-    MIME encode Base64 stream.
-    Kanji conversion is performed before encoding, so this cannot be used as a picture encoder.
+           Shift_JIS-2004
+               文字集合に JIS X 0213:2004 を用いた Shift_JIS。
 
-    - __-MQ__
+           CP932
+               Micorosft Code Page 932。 -x が暗黙のうちに指定される。
 
-    Perform quoted encoding.
+           UTF-8 UTF-8N
+               BOM 無しの UTF-8。 -w, -W と同じ。
 
-- __-l__
+           UTF-8-BOM
+               BOM 付きの UTF-8。-w8 または -W と同じ。
 
-Input and output code is ISO8859-1 (Latin-1) and ISO-2022-JP.
-__-s__, __-e__ and __-x__ are not compatible with this option.
+           UTF8-MAC
+               UTF8-MAC。互換分解されたひらがな・カタカナ等を結合します。 入力のみの対応です。
 
-- __-L[uwm] -d -c__
+           UTF-16 UTF-16BE-BOM
+               BOM 有りで Big Endian の UTF-16。 -w16B, -W16B と同じ。
 
-Convert line breaks.
+           UTF-16BE
+               BOM 無しで Big Endian の UTF-16。 -w16B0. -W16B と同じ。
 
-    - __-Lu -d__
+           UTF-16LE-BOM
+               BOM 有りで Little Endian の UTF-16。 -w16L, -W16L と同じ。
 
-    unix (LF)
+           UTF-16LE
+               BOM 無しで Little Endian の UTF-16。 -w16L0, -W16L と同じ。
 
-    - __-Lw -c__
+       --fj --unix --mac --msdos  --windows
+           これらのシステムに適した変換をします。
 
-    windows (CRLF)
+       --jis --euc --sjis --mime --base64
+           対応する変換をします。
 
-    - __-Lm__
+       --hiragana --katakana
+           平仮名、片仮名変換
 
-    mac (CR)
+       --fb-{skip, html, xml, perl, java, subchar}
+           Unicode から Shift_JIS, EUC-JP, ISO-2022-JP に変換する際に、変換できなかった文字をどう
+           扱うかを指定できます。
 
-    Without this option, nkf doesn't convert line breaks.
+       --prefix=escape charactertarget character..
+           EUC-JP から Shift_JIS への変換の際、2 バイト目 に現れた文字の前にエスケープ文字をつけ
+           ることができます。 引数の 1 文字目がエスケープ文字、2 文字目以降にエスケープされるべき
+           文字を指定します。
 
-- __--fj --unix --mac --msdos --windows__
+           例えば、
 
-Convert for these systems.
+           --prefix=\$@ とすると、Shift_JIS の 2 文字目に $ か @ が来たら、その前に \ が挿入され
+           ます --prefix=@@ とすると、Shift_JIS の 2 文字目に @ が来たら、その前に @ が挿入されま
+           す
 
-- __--jis --euc --sjis --mime --base64__
+       --no-cp932ext
+           CP932 において拡張された、NEC 特殊文字、NEC 選定 IBM 拡張文字 (89-92 区)、IBM 拡張文字
+           を変換しません。
 
-Convert to named code.
+       --no-best-fit-chars
+           Unicode からの変換の際に、往復安全性が確保されない文字の変換を行いません。 Unicode か
+           ら Unicode の変換の際に -x と共に指定すると、nkf を UTF 形式の変換に用いることができま
+           す。 (逆に言えば、これを指定しないと一部の文字が保存されません)
 
-- __--jis-input --euc-input --sjis-input --mime-input --base64-input__
+           パスに関わる文字列を変換する際には、このオプションを指定することを強く推奨します。
 
-Assume input system
+       --cap-input, --url-input
+           それぞれ :、% に続く 16 進数を文字に変換する
 
-- __--ic=_input codeset_ --oc=_output codeset___
+       --numchar-input
+           &#....; のような Unicode 文字参照を変換する
 
-Set the input or output codeset.
-NKF supports following codesets and those codeset names are case insensitive.
+       --in-place[=SUFFIX]  --overwrite[=SUFFIX]
+           元のファイルを変換結果で置き換える。 複数のファイルを書き換えることも可能。 元のファイ
+           ルのタイムスタンプとパーミッションが保持される。 現在、作成日時や inode は変更される
+           が、将来にわたってこの実装のままである保証は無い。
 
-    - ISO-2022-JP
+       --guess
+           自動判別の結果を出力する
 
-    a.k.a. RFC1468, 7bit JIS, JUNET
+       --help
+           コマンドの簡単な説明を表示する。
 
-    - EUC-JP (eucJP-nkf)
+       -V  nkf の設定を表示する。
 
-    a.k.a. AT&T JIS, Japanese EUC, UJIS
+       -v --version
+           nkf のバージョンを表示する。
 
-    - eucJP-ascii
-    - eucJP-ms
-    - CP51932
+       --  これ以降のオプションを無視する
 
-    Microsoft Version of EUC-JP.
+       --exec-in
+           nkf [options] --exec-in cmd args... とやると、cmd の出力を nkf の入力とする (config.h
+           で EXEC_IO を define してコンパイルした時のみ有効)
 
-    - Shift_JIS
+       --exec-out
+           nkf [options] --exec-out cmd args... とやると、nkf の出力を cmd の入力とする (config.h
+           で EXEC_IO を define してコンパイルした時のみ有効)
 
-    a.k.a. SJIS, MS_Kanji
+</code>
 
-    - Windows-31J
-
-    a.k.a. CP932
-
-    - UTF-8
-
-    same as UTF-8N
-
-    - UTF-8N
-
-    UTF-8 without BOM
-
-    - UTF-8-BOM
-
-    UTF-8 with BOM
-
-    - UTF8-MAC (input only)
-
-    decomposed UTF-8
-
-    - UTF-16
-
-    same as UTF-16BE
-
-    - UTF-16BE
-
-    UTF-16 Big Endian without BOM
-
-    - UTF-16BE-BOM
-
-    UTF-16 Big Endian with BOM
-
-    - UTF-16LE
-
-    UTF-16 Little Endian without BOM
-
-    - UTF-16LE-BOM
-
-    UTF-16 Little Endian with BOM
-
-    - UTF-32
-
-    same as UTF-32BE
-
-    - UTF-32BE
-
-    UTF-32 Big Endian without BOM
-
-    - UTF-32BE-BOM
-
-    UTF-32 Big Endian with BOM
-
-    - UTF-32LE
-
-    UTF-32 Little Endian without BOM
-
-    - UTF-32LE-BOM
-
-    UTF-32 Little Endian with BOM
-
-- __--fb-{skip, html, xml, perl, java, subchar}__
-
-Specify the way that nkf handles unassigned characters.
-Without this option, --fb-skip is assumed.
-
-- __--prefix=_escape character__target character_..__
-
-When nkf converts to Shift_JIS,
-nkf adds a specified escape character to specified 2nd byte of Shift_JIS characters.
-1st byte of argument is the escape character and following bytes are target characters.
-
-- __--no-cp932ext__
-
-Handle the characters extended in CP932 as unassigned characters.
-
-- __--no-best-fit-chars__
-
-When Unicode to Encoded byte conversion,
-don't convert characters which is not round trip safe.
-When Unicode to Unicode conversion,
-with this and -x option, nkf can be used as UTF converter.
-(In other words, without this and -x option, nkf doesn't save some characters)
-
-When nkf converts strings that related to path, you should use this option.
-
-- __--cap-input__
-
-Decode hex encoded characters.
-
-- __--url-input__
-
-Unescape percent escaped characters.
-
-- __--numchar-input__
-
-Decode character reference, such as "&#....;".
-
-
-
-- __--in-place[=___SUFFIX___]__  __--overwrite[=___SUFFIX___]__
-
-Overwrite __original__ listed files by filtered result.
-
-__Note__ --overwrite preserves timestamps of original files.
-
-- __--guess=[12]__
-
-Print guessed encoding and newline. (2 is default, 1 is only encoding)
-
-- __--help__
-
-Print nkf's help.
-
-- __--version__
-
-Print nkf's version.
-
-
-
-- __--__
-
-Ignore rest of -option.
 
 # AUTHOR
 

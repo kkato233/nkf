@@ -184,6 +184,13 @@ void  setbinmode(FILE *fp)
 
 #ifdef WIN32DLL
 #include "nkf32.h"
+#define Thread  __declspec( thread )
+#define Thread_static __declspec( thread ) static
+#elif defined(LINUX_SO) 
+#define Thread_static static __thread
+#include "nkf32so.h"
+#else
+#define Thread_static static
 #endif
 
 #endif /* NKF_H */

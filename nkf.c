@@ -333,9 +333,9 @@ struct input_code{
     int _file_stat;
 };
 
-static const char *input_codename = NULL; /* NULL: unestablished, "": BINARY */
-static nkf_encoding *input_encoding = NULL;
-static nkf_encoding *output_encoding = NULL;
+Thread_static const char *input_codename = NULL; /* NULL: unestablished, "": BINARY */
+Thread_static nkf_encoding *input_encoding = NULL;
+Thread_static nkf_encoding *output_encoding = NULL;
 
 #if defined(UTF8_INPUT_ENABLE) || defined(UTF8_OUTPUT_ENABLE)
 /* UCS Mapping
@@ -348,22 +348,22 @@ static nkf_encoding *output_encoding = NULL;
 #define UCS_MAP_MS      1
 #define UCS_MAP_CP932   2
 #define UCS_MAP_CP10001 3
-static int ms_ucs_map_f = UCS_MAP_ASCII;
+Thread_static int ms_ucs_map_f = UCS_MAP_ASCII;
 #endif
 #ifdef UTF8_INPUT_ENABLE
 /* no NEC special, NEC-selected IBM extended and IBM extended characters */
-static  int     no_cp932ext_f = FALSE;
+Thread_static  int     no_cp932ext_f = FALSE;
 /* ignore ZERO WIDTH NO-BREAK SPACE */
-static  int     no_best_fit_chars_f = FALSE;
-static  int     input_endian = ENDIAN_BIG;
-static  int     input_bom_f = FALSE;
-static  nkf_char     unicode_subchar = '?'; /* the regular substitution character */
-static  void    (*encode_fallback)(nkf_char c) = NULL;
+Thread_static  int     no_best_fit_chars_f = FALSE;
+Thread_static  int     input_endian = ENDIAN_BIG;
+Thread_static  int     input_bom_f = FALSE;
+Thread_static  nkf_char     unicode_subchar = '?'; /* the regular substitution character */
+Thread_static  void(*encode_fallback)(nkf_char c) = NULL;
 static  void    w_status(struct input_code *, nkf_char);
 #endif
 #ifdef UTF8_OUTPUT_ENABLE
-static  int     output_bom_f = FALSE;
-static  int     output_endian = ENDIAN_BIG;
+Thread_static  int     output_bom_f = FALSE;
+Thread_static  int     output_endian = ENDIAN_BIG;
 #endif
 
 static  void    std_putc(nkf_char c);
@@ -379,44 +379,44 @@ static void mime_putc(nkf_char c);
 
 /* buffers */
 
-#if !defined(PERL_XS) && !defined(WIN32DLL)
-static unsigned char   stdibuf[IOBUF_SIZE];
-static unsigned char   stdobuf[IOBUF_SIZE];
+#if !defined(PERL_XS) && !defined(WIN32DLL) && !defined(LINUX_SO)
+Thread_static unsigned char   stdibuf[IOBUF_SIZE];
+Thread_static unsigned char   stdobuf[IOBUF_SIZE];
 #endif
 
 #define NKF_UNSPECIFIED (-TRUE)
 
 /* flags */
-static int             unbuf_f = FALSE;
-static int             estab_f = FALSE;
-static int             nop_f = FALSE;
-static int             binmode_f = TRUE;       /* binary mode */
-static int             rot_f = FALSE;          /* rot14/43 mode */
-static int             hira_f = FALSE;          /* hira/kata henkan */
-static int             alpha_f = FALSE;        /* convert JIx0208 alphbet to ASCII */
-static int             mime_f = MIME_DECODE_DEFAULT;   /* convert MIME B base64 or Q */
-static int             mime_decode_f = FALSE;  /* mime decode is explicitly on */
-static int             mimebuf_f = FALSE;      /* MIME buffered input */
-static int             broken_f = FALSE;       /* convert ESC-less broken JIS */
-static int             iso8859_f = FALSE;      /* ISO8859 through */
-static int             mimeout_f = FALSE;       /* base64 mode */
-static int             x0201_f = NKF_UNSPECIFIED;   /* convert JIS X 0201 */
-static int             iso2022jp_f = FALSE;    /* replace non ISO-2022-JP with GETA */
+Thread_static int             unbuf_f = FALSE;
+Thread_static int             estab_f = FALSE;
+Thread_static int             nop_f = FALSE;
+Thread_static int             binmode_f = TRUE;       /* binary mode */
+Thread_static int             rot_f = FALSE;          /* rot14/43 mode */
+Thread_static int             hira_f = FALSE;          /* hira/kata henkan */
+Thread_static int             alpha_f = FALSE;        /* convert JIx0208 alphbet to ASCII */
+Thread_static int             mime_f = MIME_DECODE_DEFAULT;   /* convert MIME B base64 or Q */
+Thread_static int             mime_decode_f = FALSE;  /* mime decode is explicitly on */
+Thread_static int             mimebuf_f = FALSE;      /* MIME buffered input */
+Thread_static int             broken_f = FALSE;       /* convert ESC-less broken JIS */
+Thread_static int             iso8859_f = FALSE;      /* ISO8859 through */
+Thread_static int             mimeout_f = FALSE;       /* base64 mode */
+Thread_static int             x0201_f = NKF_UNSPECIFIED;   /* convert JIS X 0201 */
+Thread_static int             iso2022jp_f = FALSE;    /* replace non ISO-2022-JP with GETA */
 
 #ifdef UNICODE_NORMALIZATION
-static int nfc_f = FALSE;
-static nkf_char (*i_nfc_getc)(FILE *) = std_getc; /* input of ugetc */
-static nkf_char (*i_nfc_ungetc)(nkf_char c ,FILE *f) = std_ungetc;
+Thread_static int nfc_f = FALSE;
+Thread_static nkf_char(*i_nfc_getc)(FILE *) = std_getc; /* input of ugetc */
+Thread_static nkf_char(*i_nfc_ungetc)(nkf_char c, FILE *f) = std_ungetc;
 #endif
 
 #ifdef INPUT_OPTION
-static int cap_f = FALSE;
-static nkf_char (*i_cgetc)(FILE *) = std_getc; /* input of cgetc */
-static nkf_char (*i_cungetc)(nkf_char c ,FILE *f) = std_ungetc;
+Thread_static int cap_f = FALSE;
+Thread_static nkf_char(*i_cgetc)(FILE *) = std_getc; /* input of cgetc */
+Thread_static nkf_char(*i_cungetc)(nkf_char c, FILE *f) = std_ungetc;
 
-static int url_f = FALSE;
-static nkf_char (*i_ugetc)(FILE *) = std_getc; /* input of ugetc */
-static nkf_char (*i_uungetc)(nkf_char c ,FILE *f) = std_ungetc;
+Thread_static int url_f = FALSE;
+Thread_static nkf_char(*i_ugetc)(FILE *) = std_getc; /* input of ugetc */
+Thread_static nkf_char(*i_uungetc)(nkf_char c, FILE *f) = std_ungetc;
 #endif
 
 #define PREFIX_EUCG3    NKF_INT32_C(0x8F00)
@@ -434,45 +434,45 @@ static nkf_char (*i_uungetc)(nkf_char c ,FILE *f) = std_ungetc;
 #define UTF16_TO_UTF32(lead, trail) (((lead) << 10) + (trail) - NKF_INT32_C(0x35FDC00))
 
 #ifdef NUMCHAR_OPTION
-static int numchar_f = FALSE;
-static nkf_char (*i_ngetc)(FILE *) = std_getc; /* input of ugetc */
-static nkf_char (*i_nungetc)(nkf_char c ,FILE *f) = std_ungetc;
+Thread_static int numchar_f = FALSE;
+Thread_static nkf_char(*i_ngetc)(FILE *) = std_getc; /* input of ugetc */
+Thread_static nkf_char(*i_nungetc)(nkf_char c, FILE *f) = std_ungetc;
 #endif
 
 #ifdef CHECK_OPTION
-static int noout_f = FALSE;
+Thread_static int noout_f = FALSE;
 static void no_putc(nkf_char c);
-static int debug_f = FALSE;
+Thread_static int debug_f = FALSE;
 static void debug(const char *str);
-static nkf_char (*iconv_for_check)(nkf_char c2,nkf_char c1,nkf_char c0) = 0;
+Thread_static nkf_char(*iconv_for_check)(nkf_char c2, nkf_char c1, nkf_char c0) = 0;
 #endif
 
-static int guess_f = 0; /* 0: OFF, 1: ON, 2: VERBOSE */
+Thread_static int guess_f = 0; /* 0: OFF, 1: ON, 2: VERBOSE */
 static  void    set_input_codename(const char *codename);
 
 #ifdef EXEC_IO
-static int exec_f = 0;
+Thread_static int exec_f = 0;
 #endif
 
 #ifdef SHIFTJIS_CP932
 /* invert IBM extended characters to others */
-static int cp51932_f = FALSE;
+Thread_static int cp51932_f = FALSE;
 
 /* invert NEC-selected IBM extended characters to IBM extended characters */
-static int cp932inv_f = TRUE;
+Thread_static int cp932inv_f = TRUE;
 
 /* static nkf_char cp932_conv(nkf_char c2, nkf_char c1); */
 #endif /* SHIFTJIS_CP932 */
 
-static int x0212_f = FALSE;
-static int x0213_f = FALSE;
+Thread_static int x0212_f = FALSE;
+Thread_static int x0213_f = FALSE;
 
-static unsigned char prefix_table[256];
+Thread_static unsigned char prefix_table[256];
 
 static void e_status(struct input_code *, nkf_char);
 static void s_status(struct input_code *, nkf_char);
 
-struct input_code input_code_list[] = {
+Thread_static struct input_code input_code_list[] = {
     {"EUC-JP",    0, 0, 0, {0, 0, 0}, e_status, e_iconv, 0},
     {"Shift_JIS", 0, 0, 0, {0, 0, 0}, s_status, s_iconv, 0},
 #ifdef UTF8_INPUT_ENABLE
@@ -483,28 +483,28 @@ struct input_code input_code_list[] = {
     {NULL,        0, 0, 0, {0, 0, 0}, NULL, NULL, 0}
 };
 
-static int              mimeout_mode = 0; /* 0, -1, 'Q', 'B', 1, 2 */
-static int              base64_count = 0;
+Thread_static int              mimeout_mode = 0; /* 0, -1, 'Q', 'B', 1, 2 */
+Thread_static int              base64_count = 0;
 
 /* X0208 -> ASCII converter */
 
 /* fold parameter */
-static int             f_line = 0;    /* chars in line */
-static int             f_prev = 0;
-static int             fold_preserve_f = FALSE; /* preserve new lines */
-static int             fold_f  = FALSE;
-static int             fold_len  = 0;
+Thread_static int             f_line = 0;    /* chars in line */
+Thread_static int             f_prev = 0;
+Thread_static int             fold_preserve_f = FALSE; /* preserve new lines */
+Thread_static int             fold_f = FALSE;
+Thread_static int             fold_len = 0;
 
 /* options */
-static unsigned char   kanji_intro = DEFAULT_J;
-static unsigned char   ascii_intro = DEFAULT_R;
+Thread_static unsigned char   kanji_intro = DEFAULT_J;
+Thread_static unsigned char   ascii_intro = DEFAULT_R;
 
 /* Folding */
 
 #define FOLD_MARGIN  10
 #define DEFAULT_FOLD 60
 
-static int             fold_margin  = FOLD_MARGIN;
+Thread_static int             fold_margin = FOLD_MARGIN;
 
 /* process default */
 
@@ -522,40 +522,40 @@ no_connection(nkf_char c2, nkf_char c1)
     no_connection2(c2,c1,0);
 }
 
-static nkf_char (*iconv)(nkf_char c2,nkf_char c1,nkf_char c0) = no_connection2;
-static void (*oconv)(nkf_char c2,nkf_char c1) = no_connection;
+Thread_static nkf_char(*iconv)(nkf_char c2, nkf_char c1, nkf_char c0) = no_connection2;
+Thread_static void(*oconv)(nkf_char c2, nkf_char c1) = no_connection;
 
-static void (*o_zconv)(nkf_char c2,nkf_char c1) = no_connection;
-static void (*o_fconv)(nkf_char c2,nkf_char c1) = no_connection;
-static void (*o_eol_conv)(nkf_char c2,nkf_char c1) = no_connection;
-static void (*o_rot_conv)(nkf_char c2,nkf_char c1) = no_connection;
-static void (*o_hira_conv)(nkf_char c2,nkf_char c1) = no_connection;
-static void (*o_base64conv)(nkf_char c2,nkf_char c1) = no_connection;
-static void (*o_iso2022jp_check_conv)(nkf_char c2,nkf_char c1) = no_connection;
+Thread_static void(*o_zconv)(nkf_char c2, nkf_char c1) = no_connection;
+Thread_static void(*o_fconv)(nkf_char c2, nkf_char c1) = no_connection;
+Thread_static void(*o_eol_conv)(nkf_char c2, nkf_char c1) = no_connection;
+Thread_static void(*o_rot_conv)(nkf_char c2, nkf_char c1) = no_connection;
+Thread_static void(*o_hira_conv)(nkf_char c2, nkf_char c1) = no_connection;
+Thread_static void(*o_base64conv)(nkf_char c2, nkf_char c1) = no_connection;
+Thread_static void(*o_iso2022jp_check_conv)(nkf_char c2, nkf_char c1) = no_connection;
 
 /* static redirections */
 
-static  void   (*o_putc)(nkf_char c) = std_putc;
+Thread_static  void(*o_putc)(nkf_char c) = std_putc;
 
-static  nkf_char    (*i_getc)(FILE *f) = std_getc; /* general input */
-static  nkf_char    (*i_ungetc)(nkf_char c,FILE *f) =std_ungetc;
+Thread_static  nkf_char(*i_getc)(FILE *f) = std_getc; /* general input */
+Thread_static  nkf_char(*i_ungetc)(nkf_char c, FILE *f) = std_ungetc;
 
-static  nkf_char    (*i_bgetc)(FILE *) = std_getc; /* input of mgetc */
-static  nkf_char    (*i_bungetc)(nkf_char c ,FILE *f) = std_ungetc;
+Thread_static  nkf_char(*i_bgetc)(FILE *) = std_getc; /* input of mgetc */
+Thread_static  nkf_char(*i_bungetc)(nkf_char c, FILE *f) = std_ungetc;
 
-static  void   (*o_mputc)(nkf_char c) = std_putc ; /* output of mputc */
+Thread_static  void(*o_mputc)(nkf_char c) = std_putc; /* output of mputc */
 
-static  nkf_char    (*i_mgetc)(FILE *) = std_getc; /* input of mgetc */
-static  nkf_char    (*i_mungetc)(nkf_char c ,FILE *f) = std_ungetc;
+Thread_static  nkf_char(*i_mgetc)(FILE *) = std_getc; /* input of mgetc */
+Thread_static  nkf_char(*i_mungetc)(nkf_char c, FILE *f) = std_ungetc;
 
 /* for strict mime */
-static  nkf_char    (*i_mgetc_buf)(FILE *) = std_getc; /* input of mgetc_buf */
-static  nkf_char    (*i_mungetc_buf)(nkf_char c,FILE *f) = std_ungetc;
+Thread_static  nkf_char(*i_mgetc_buf)(FILE *) = std_getc; /* input of mgetc_buf */
+Thread_static  nkf_char(*i_mungetc_buf)(nkf_char c, FILE *f) = std_ungetc;
 
 /* Global states */
-static int output_mode = ASCII;    /* output kanji mode */
-static int input_mode =  ASCII;    /* input kanji mode */
-static int mime_decode_mode =   FALSE;    /* MIME mode B base64, Q hex */
+Thread_static int output_mode = ASCII;    /* output kanji mode */
+Thread_static int input_mode = ASCII;    /* input kanji mode */
+Thread_static int mime_decode_mode = FALSE;    /* MIME mode B base64, Q hex */
 
 /* X0201 / X0208 conversion tables */
 
@@ -665,20 +665,20 @@ static const unsigned char fv[] = {
 
 
 
-static int option_mode = 0;
-static int             file_out_f = FALSE;
+Thread_static int option_mode = 0;
+Thread_static int             file_out_f = FALSE;
 #ifdef OVERWRITE
-static int             overwrite_f = FALSE;
-static int             preserve_time_f = FALSE;
-static int             backup_f = FALSE;
-static char            *backup_suffix = "";
+Thread_static int             overwrite_f = FALSE;
+Thread_static int             preserve_time_f = FALSE;
+Thread_static int             backup_f = FALSE;
+Thread_static char            *backup_suffix = "";
 #endif
 
-static int eolmode_f = 0;   /* CR, LF, CRLF */
-static int input_eol = 0; /* 0: unestablished, EOF: MIXED */
-static nkf_char prev_cr = 0; /* CR or 0 */
+Thread_static int eolmode_f = 0;   /* CR, LF, CRLF */
+Thread_static int input_eol = 0; /* 0: unestablished, EOF: MIXED */
+Thread_static nkf_char prev_cr = 0; /* CR or 0 */
 #ifdef EASYWIN /*Easy Win */
-static int             end_check;
+Thread_static int             end_check;
 #endif /*Easy Win */
 
 static void *
@@ -779,7 +779,7 @@ nkf_locale_charmap(void)
 #ifdef HAVE_LANGINFO_H
     return nl_langinfo(CODESET);
 #elif defined(__WIN32__)
-    static char buf[16];
+	Thread_static char buf[16];
     sprintf(buf, "CP%d", GetACP());
     return buf;
 #elif defined(__OS2__)
@@ -788,7 +788,7 @@ nkf_locale_charmap(void)
     return NULL;
 # else
     /* OS/2 32bit */
-    static char buf[16];
+	Thread_static char buf[16];
     ULONG ulCP[1], ulncp;
     DosQueryCp(sizeof(ulCP), ulCP, &ulncp);
     if (ulCP[0] == 932 || ulCP[0] == 943)
@@ -890,7 +890,7 @@ nkf_buf_pop(nkf_buf_t *buf)
 
 /* Normalization Form C */
 #ifndef PERL_XS
-#ifdef WIN32DLL
+#if defined(WIN32DLL) || defined(LINUX_SO)
 #define fprintf dllprintf
 #endif
 
@@ -3316,7 +3316,7 @@ typedef struct {
     nkf_buf_t *nfc_buf;
 } nkf_state_t;
 
-static nkf_state_t *nkf_state = NULL;
+Thread_static nkf_state_t *nkf_state = NULL;
 
 #define STD_GC_BUFSIZE (256)
 
@@ -3338,7 +3338,7 @@ nkf_state_init(void)
     nkf_state->mimeout_state = 0;
 }
 
-#ifndef WIN32DLL
+#if !defined(WIN32DLL) && !defined(LINUX_SO)
 static nkf_char
 std_getc(FILE *f)
 {
@@ -3356,7 +3356,7 @@ std_ungetc(nkf_char c, ARG_UNUSED FILE *f)
     return c;
 }
 
-#ifndef WIN32DLL
+#if !defined(WIN32DLL) && !defined(LINUX_SO)
 static void
 std_putc(nkf_char c)
 {
@@ -3365,8 +3365,8 @@ std_putc(nkf_char c)
 }
 #endif /*WIN32DLL*/
 
-static nkf_char   hold_buf[HOLD_SIZE*2];
-static int             hold_count = 0;
+Thread_static nkf_char   hold_buf[HOLD_SIZE * 2];
+Thread_static int             hold_count = 0;
 static nkf_char
 push_hold_buf(nkf_char c2)
 {
@@ -3990,7 +3990,8 @@ fold_conv(nkf_char c2, nkf_char c1)
     }
 }
 
-static nkf_char z_prev2=0,z_prev1=0;
+Thread_static nkf_char z_prev2 = 0;
+Thread_static nkf_char z_prev1 = 0;
 
 static void
 z_conv(nkf_char c2, nkf_char c1)
@@ -4589,7 +4590,7 @@ get_guessed_code(void)
     return input_codename;
 }
 
-#if !defined(PERL_XS) && !defined(WIN32DLL)
+#if !defined(PERL_XS) && !defined(WIN32DLL) && !defined(LINUX_SO)
 static void
 print_guessed_code(char *filename)
 {
@@ -5050,7 +5051,7 @@ static const char basis_64[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 #define MIMEOUT_BUF_LENGTH 74
-static struct {
+Thread_static struct {
     unsigned char buf[MIMEOUT_BUF_LENGTH+1];
     int count;
 } mimeout_state;
@@ -5359,7 +5360,7 @@ mime_putc(nkf_char c)
 		    && base64_count + mimeout_state.count > 76
 		    && mimeout_state.buf[0] != CR && mimeout_state.buf[0] != LF){
 		    static const char *str = "boundary=\"";
-		    static int len = 10;
+			Thread_static int len = 10;
 		    i = 0;
 
 		    for (; i < mimeout_state.count - len; ++i) {
@@ -5701,7 +5702,7 @@ reinit(void)
     input_encoding = NULL;
     output_encoding = NULL;
     nkf_state_init();
-#ifdef WIN32DLL
+#if defined(WIN32DLL) || defined(LINUX_SO)
     reinitdll();
 #endif /*WIN32DLL*/
 }
@@ -5816,7 +5817,7 @@ module_connection(void)
    Conversion main loop. Code detection only.
  */
 
-#if !defined(PERL_XS) && !defined(WIN32DLL)
+#if !defined(PERL_XS) && !defined(WIN32DLL) && !defined(LINUX_SO)
 static nkf_char
 noconvert(FILE *f)
 {
@@ -5859,7 +5860,7 @@ kanji_convert(FILE *f)
     output_mode = ASCII;
 
     if (module_connection() < 0) {
-#if !defined(PERL_XS) && !defined(WIN32DLL)
+#if !defined(PERL_XS) && !defined(WIN32DLL) && !defined(LINUX_SO)
 	fprintf(stderr, "no output encoding given\n");
 #endif
 	return -1;
@@ -6401,7 +6402,7 @@ options(unsigned char *cp)
 		p = 0;
 	    }
 	    if (p == 0) {
-#if !defined(PERL_XS) && !defined(WIN32DLL)
+#if !defined(PERL_XS) && !defined(WIN32DLL) && !defined(LINUX_SO)
 		fprintf(stderr, "unknown long option: --%s\n", cp);
 #endif
 		return -1;
@@ -6618,7 +6619,7 @@ options(unsigned char *cp)
 		    }
 		    continue;
 		}
-#if !defined(PERL_XS) && !defined(WIN32DLL)
+#if !defined(PERL_XS) && !defined(WIN32DLL) && !defined(LINUX_SO)
 		fprintf(stderr, "unsupported long option: --%s\n", long_option[i].name);
 #endif
 		return -1;
@@ -6916,7 +6917,7 @@ options(unsigned char *cp)
 	    while(*cp && *cp++!='-');
 	    continue;
 	default:
-#if !defined(PERL_XS) && !defined(WIN32DLL)
+#if !defined(PERL_XS) && !defined(WIN32DLL) && !defined(LINUX_SO)
 	    fprintf(stderr, "unknown option: -%c\n", *(cp-1));
 #endif
 	    /* bogus option but ignored */
@@ -6926,8 +6927,10 @@ options(unsigned char *cp)
     return 0;
 }
 
-#ifdef WIN32DLL
+#if defined(WIN32DLL) 
 #include "nkf32dll.c"
+#elif defined(LINUX_SO)
+#include "nkf32so.c"
 #elif defined(PERL_XS)
 #else /* WIN32DLL */
 int

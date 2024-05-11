@@ -1,0 +1,46 @@
+name: MSBuild
+
+on: push
+
+jobs:
+  build:
+    name: MSBuild
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: shogo82148/actions-setup-perl@v1
+      with:
+        perl-version: '5.30'
+
+    - name: Setup MSBuild.exe
+      uses: warrenbuckley/Setup-MSBuild@v1
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+    
+    - name: MSBuild nkf.exe
+      run: msbuild nkf.sln -t:Rebuild -p:Configuration=Release -p:OutDir=artifact
+      shell: cmd
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+
+    - name: MSBuild nkf32.dll (x86)
+      run: msbuild nkf32.sln -t:Rebuild -p:Configuration=Release -p:Platform=Win32 -p:OutDir=artifact\x86
+      shell: cmd
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+
+    - name: MSBuild  nkf32.dll (x64)
+      run: msbuild nkf32.sln -p:Configuration=Release -p:Platform=x64 -p:OutDir=artifact\x64
+      shell: cmd
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+
+    - name: Test with Perl
+      run: perl test.pl .\artifact\nkf.exe
+
+    # Upload the binary package: https://github.com/actions/upload-artifact
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: release files
+        path: ${{ github.workspace }}\artifact
