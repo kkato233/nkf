@@ -13,7 +13,7 @@ prefix = /usr/local
 PYTHON2 = python
 PYTHON3 = python
 
-.PHONY: clean install test tar shar
+.PHONY: clean install test test-library tar shar
 
 all : nkf libnkf32.so
 
@@ -33,11 +33,18 @@ utf8tbl.o : utf8tbl.c utf8tbl.h config.h
 	$(CC) $(CFLAGS) -c utf8tbl.c
 
 clean:
-	-$(RM) nkf.o nkf nkf.exe libnkf32.so nkf32so.o nkf.in nkf.out  nkf-$(VERSION) *~ *.bad utf8tbl.o
+	-$(RM) nkf.o nkf nkf.exe libnkf32.so nkf32so.o test_library_options nkf.in nkf.out  nkf-$(VERSION) *~ *.bad utf8tbl.o
 	cd NKF.mod; if [ -f Makefile ]; then make clean; fi
 
-test:	nkf
+test:	nkf libnkf32.so test_library_options
 	$(PERL) test.pl
+	LD_LIBRARY_PATH=. ./test_library_options
+
+test-library: libnkf32.so test_library_options
+	LD_LIBRARY_PATH=. ./test_library_options
+
+test_library_options: test_library_options.c nkf32so.h libnkf32.so
+	$(CC) $(CFLAGS) -o $@ test_library_options.c -L. -lnkf32
 
 perl:
 	( cd NKF.mod ; \

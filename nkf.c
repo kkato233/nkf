@@ -6415,7 +6415,11 @@ options(unsigned char *cp)
 #ifndef PERL_XS
 		if (strcmp(long_option[i].name, "help") == 0){
 		    usage();
+#if defined(WIN32DLL) || defined(LINUX_SO)
+		    return -1;
+#else
 		    exit(EXIT_SUCCESS);
+#endif
 		}
 #endif
 		if (strcmp(long_option[i].name, "ic=") == 0){
@@ -6692,11 +6696,19 @@ options(unsigned char *cp)
 #ifndef PERL_XS
 	case 'V':
 	    show_configuration();
+#if defined(WIN32DLL) || defined(LINUX_SO)
+	    return -1;
+#else
 	    exit(EXIT_SUCCESS);
+#endif
 	    break;
 	case 'v':
 	    version();
+#if defined(WIN32DLL) || defined(LINUX_SO)
+	    return -1;
+#else
 	    exit(EXIT_SUCCESS);
+#endif
 	    break;
 #endif
 #ifdef UTF8_OUTPUT_ENABLE

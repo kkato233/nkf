@@ -35,6 +35,7 @@ nkf.mak
 nkf32.c
 nkf32.h
 nkf32dll.c
+test_library_options.c
 nkf_test.pl
 nkf_utf8.txt
 test.pl
