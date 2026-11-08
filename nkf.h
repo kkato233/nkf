@@ -187,6 +187,7 @@ void  setbinmode(FILE *fp)
 #define Thread  __declspec( thread )
 #define Thread_static __declspec( thread ) static
 #elif defined(LINUX_SO) 
+#define Thread __thread
 #define Thread_static static __thread
 #include "nkf32so.h"
 #else
