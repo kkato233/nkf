@@ -528,7 +528,7 @@ void CALLBACK ToMime(LPSTR outStr ,LPCSTR inStr)
 #endif /*TOMIME*/
 
 #ifdef GETKANJICODE
-int CALLBACK NkfGetKanjiCode(VOID)
+int CALLBACK NkfGetKanjiCode(void)
 {
     int iCode=0;
     /* if(iconv == s_iconv)iCode=0; */ /* 0:シフトJIS */
