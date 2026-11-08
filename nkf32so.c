@@ -457,40 +457,35 @@ void CALLBACK NkfFileConvert1(LPCSTR fName)
 
 
 #define BUFSIZE 1024
-BOOL my_file_copy(const char * from, const char *to) {
+static BOOL my_file_copy(FILE *from, FILE *to) {
     char buf[BUFSIZE];
+    size_t read_n;
 
-    FILE *fp_r = fopen(from, "rb");
-    if (!fp_r) return FALSE;
-
-    FILE *fp_w = fopen(to, "wb");
-    if (!fp_w) {
-        fclose(fp_r);
-        return FALSE;
+    while ((read_n = fread(buf, 1, BUFSIZE, from)) > 0) {
+        if (fwrite(buf, 1, read_n, to) != read_n) return FALSE;
     }
-
-    int read_n = fread(buf, 1, BUFSIZE, fp_r);
-    while(read_n > 0) {
-        fwrite(buf, 1, read_n, fp_w);
-        read_n = fread(buf, 1, BUFSIZE, fp_r);
-    }
-    fclose(fp_r);
-    fclose(fp_w);
-    return TRUE;
+    return !ferror(from) && fflush(to) == 0;
 }
 
 BOOL WINAPI NkfFileConvert1Safe(LPCSTR fName,DWORD nBufferLength /*in TCHARs*/)
 {
-    FILE *fin;
-    char *tempdname;
-    char d[4];
-    DWORD len;
-    BOOL sts;
+    FILE *fin = NULL;
+    FILE *fcopy = NULL;
+    int fd = -1;
+    char *copyname = NULL;
+    char *outname = NULL;
+    const char *tmpdir;
+    const char *slash;
+    size_t dir_len;
+    size_t outname_len;
+    BOOL copy_created = FALSE;
+    BOOL out_created = FALSE;
     BOOL ret;
     LPCSTR p;
 
     options0();
     ret = FALSE;
+    fout = NULL;
     p = fName;
     for ( ;; ) {
         if ( nBufferLength == 0 ) return ret;
@@ -498,28 +493,91 @@ BOOL WINAPI NkfFileConvert1Safe(LPCSTR fName,DWORD nBufferLength /*in TCHARs*/)
         p++;
         --nBufferLength;
     }
-    if ( chmod(fName,S_IREAD | S_IWRITE) == -1 ) return ret;
-    char tempfname[] = "/tmp/NKF_XXXXXX";
-    sts = my_file_copy(fName,tempfname);
-    if ( sts ) {
-        if ((fin = fopen(tempfname, "rb")) != NULL) {
-            if ((fout = fopen(fName, "wb")) != NULL) {
-                cin = NULL;
-                nin = -1;
-                ninmax = -1;
-                std_getc_mode = 1;
-                cout = NULL;
-                nout = -1;
-                noutmax = -1;
-                std_putc_mode = 1;
-                kanji_convert(fin);
-                ret = TRUE;
-                fclose(fout);
-            }
-            fclose(fin);
-        }
-        unlink(tempfname);
+    fin = fopen(fName, "rb");
+    if (fin == NULL) goto cleanup;
+
+    tmpdir = getenv("TMPDIR");
+    if (tmpdir == NULL || *tmpdir == '\0') tmpdir = "/tmp";
+    copyname = (char *)malloc(strlen(tmpdir) + sizeof("/NKF_XXXXXX"));
+    if (copyname == NULL) goto cleanup;
+    sprintf(copyname, "%s/NKF_XXXXXX", tmpdir);
+    fd = mkstemp(copyname);
+    if (fd < 0) goto cleanup;
+    copy_created = TRUE;
+    fcopy = fdopen(fd, "w+b");
+    if (fcopy == NULL) goto cleanup;
+    fd = -1;
+
+    if (!my_file_copy(fin, fcopy)) goto cleanup;
+    if (fclose(fin) != 0) {
+        fin = NULL;
+        goto cleanup;
     }
+    fin = NULL;
+    if (fseek(fcopy, 0, SEEK_SET) != 0) goto cleanup;
+
+    slash = strrchr(fName, '/');
+    if (slash == NULL) {
+        outname_len = sizeof("./.nkf.XXXXXX");
+    } else if (slash == fName) {
+        outname_len = sizeof("/.nkf.XXXXXX");
+    } else {
+        dir_len = (size_t)(slash - fName);
+        outname_len = dir_len + sizeof("/.nkf.XXXXXX");
+    }
+    outname = (char *)malloc(outname_len);
+    if (outname == NULL) goto cleanup;
+    if (slash == NULL) {
+        strcpy(outname, "./.nkf.XXXXXX");
+    } else if (slash == fName) {
+        strcpy(outname, "/.nkf.XXXXXX");
+    } else {
+        snprintf(outname, outname_len, "%.*s/.nkf.XXXXXX",
+                 (int)dir_len, fName);
+    }
+    fd = mkstemp(outname);
+    if (fd < 0) goto cleanup;
+    out_created = TRUE;
+    fout = fdopen(fd, "wb");
+    if (fout == NULL) goto cleanup;
+    fd = -1;
+
+    cin = NULL;
+    nin = -1;
+    ninmax = -1;
+    std_getc_mode = 1;
+    cout = NULL;
+    nout = -1;
+    noutmax = -1;
+    std_putc_mode = 1;
+    kanji_convert(fcopy);
+    if (ferror(fcopy) || fflush(fout) != 0 || ferror(fout)) goto cleanup;
+    if (fclose(fcopy) != 0) {
+        fcopy = NULL;
+        goto cleanup;
+    }
+    fcopy = NULL;
+    if (fclose(fout) != 0) {
+        fout = NULL;
+        goto cleanup;
+    }
+    fout = NULL;
+    if (rename(outname, fName) != 0) goto cleanup;
+    out_created = FALSE;
+    ret = TRUE;
+
+cleanup:
+    if (fin != NULL) fclose(fin);
+    if (fcopy != NULL) fclose(fcopy);
+    if (fout != NULL) {
+        fclose(fout);
+        fout = NULL;
+    }
+    if (fd >= 0) close(fd);
+    if (copy_created) unlink(copyname);
+    if (out_created) unlink(outname);
+    free(copyname);
+    free(outname);
     return ret;
 }
 
