@@ -389,9 +389,10 @@ int findspace(const char* str)
 	return find_n;
 }
 // オプションが 空白で区切られている場合に options を複数呼び出す
-void callOptions()
+int callOptions()
 {
 	char *work = strdup(optStr0);
+	if (work == NULL) return -1;
 	int len = strlen(optStr0);
 	for (int i = 0; i < len; i++) {
 		if (work[i] == ' ') {
@@ -404,7 +405,10 @@ void callOptions()
 		// 文字を探す
 		if (work[i] != '\0') {
 			// options 呼び出し
-			options(&work[i]);
+			if (options(&work[i]) < 0) {
+				free(work);
+				return -1;
+			}
 
 			// 文字の終端を探す
 			while (work[i] != '\0' && i < len) {
@@ -416,6 +420,7 @@ void callOptions()
 		}
 	}
 	free(work);
+	return 0;
 }
 
 // プロセス起動時に初期値に設定される値を初期設定する。
@@ -430,24 +435,25 @@ void reinit_dll()
 	input_eol = 0;
 }
 
-void options0(void)
+int options0(void)
 {
     reinit();
 	reinit_dll();
     if ( optStr0 != NULL ) {
 		// option の中に 空白があった場合 options を分割して呼び出す
 		if (findspace(optStr0) > 0) {
-			callOptions();
+			return callOptions();
 		}
 		else {
-			options(optStr0);
+			return options(optStr0);
 		}
     }
+	return 0;
 }
 
 void CALLBACK NkfConvert(LPSTR outStr, LPCSTR inStr)
 {
-    options0();
+    if (options0() < 0) return;
     std_putc_mode = 2;
     cout = outStr;
     noutmax = -1;
@@ -462,7 +468,7 @@ void CALLBACK NkfConvert(LPSTR outStr, LPCSTR inStr)
 
 BOOL WINAPI NkfConvertSafe(LPSTR outStr,DWORD nOutBufferLength /*in Bytes*/,LPDWORD lpBytesReturned /*in Bytes*/, LPCSTR inStr,DWORD nInBufferLength /*in Bytes*/){
     if ( inStr == NULL ) return FALSE;
-    options0();
+    if (options0() < 0) return FALSE;
     std_putc_mode = 6;
     cout = outStr;
     noutmax = nOutBufferLength;
@@ -554,7 +560,7 @@ void CALLBACK NkfFileConvert1(LPCSTR fName)
     DWORD len;
     BOOL sts;
 
-    options0();
+    if (options0() < 0) return;
     len = GetTempPath(sizeof d,d);
     tempdname = malloc(len + 1);
     if ( tempdname == NULL ) return;
@@ -596,7 +602,7 @@ BOOL WINAPI NkfFileConvert1SafeA(LPCSTR fName,DWORD nBufferLength /*in TCHARs*/)
     BOOL ret;
     LPCSTR p;
 
-    options0();
+    if (options0() < 0) return FALSE;
     ret = FALSE;
     p = fName;
     for ( ;; ) {
@@ -649,7 +655,7 @@ BOOL WINAPI NkfFileConvert1SafeW(LPCWSTR fName,DWORD nBufferLength /*in TCHARs*/
     BOOL ret;
     LPCWSTR p;
 
-    options0();
+    if (options0() < 0) return FALSE;
     ret = FALSE;
     p = fName;
     for ( ;; ) {
@@ -698,7 +704,7 @@ void CALLBACK NkfFileConvert2(LPCSTR fInName,LPCSTR fOutName)
 {
     FILE *fin;
 
-    options0();
+    if (options0() < 0) return;
     if ((fin = fopen(fInName, "rb")) == NULL) return;
     if((fout=fopen(fOutName, "wb")) == NULL) {
         fclose(fin);
@@ -725,7 +731,7 @@ BOOL WINAPI NkfFileConvert2SafeA(LPCSTR fInName,DWORD fInBufferLength /*in TCHAR
     BOOL ret;
     LPCSTR p;
 
-    options0();
+    if (options0() < 0) return FALSE;
     ret = FALSE;
     p = fInName;
     for ( ;; ) {
@@ -768,7 +774,7 @@ BOOL WINAPI NkfFileConvert2SafeW(LPCWSTR fInName,DWORD fInBufferLength /*in TCHA
     BOOL ret;
     LPCWSTR p;
 
-    options0();
+    if (options0() < 0) return FALSE;
     ret = FALSE;
     p = fInName;
     for ( ;; ) {
