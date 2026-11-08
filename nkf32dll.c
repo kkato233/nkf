@@ -1,15 +1,15 @@
-/* nkf32.dll nfk32dll.c */
+﻿/* nkf32.dll nfk32dll.c */
 /* e-mail:tkaneto@nifty.com */
 /* URL: http://www1.ttcn.ne.jp/~kaneto */
 
 /*WIN32DLL*/
-/* ������̃o�[�W�������X�V���Ă��������B */
+/* こちらのバージョンも更新してください。 */
 #define NKF_VERSIONW L"2.1.5"
-/* NKF_VERSION �̃��C�h���� */
+/* NKF_VERSION のワイド文字 */
 #define DLL_VERSION   "2.1.5.1 2"
-/* DLL���Ԃ� */
+/* DLLが返す */
 #define DLL_VERSIONW L"2.1.5.1 2"
-/* DLL���Ԃ� DLL_VERSION �̃��C�h���� */
+/* DLLが返す DLL_VERSION のワイド文字 */
 
 /* nkf32.dll main */
 #include <windows.h>
@@ -97,21 +97,21 @@ int dllprintf(FILE *fp,char *fmt,...)
 /** Network Kanji Filter. (PDS Version)
 ************************************************************************
 ** Copyright (C) 1987, Fujitsu LTD. (Itaru ICHIKAWA)
-** �A����F �i���j�x�m�ʌ������@�\�t�g�R���@�s��@�� 
-** �iE-Mail Address: ichikawa@flab.fujitsu.co.jp�j
+** 連絡先： （株）富士通研究所　ソフト３研　市川　至
+** （E-Mail Address: ichikawa@flab.fujitsu.co.jp）
 ** Copyright (C) 1996,1998
 ** Copyright (C) 2002
-** �A����F ������w���H�w�� �͖� �^��  mime/X0208 support
-** �iE-Mail Address: kono@ie.u-ryukyu.ac.jp�j
-** �A����F COW for DOS & Win16 & Win32 & OS/2
-** �iE-Mail Address: GHG00637@niftyserve.or.p�j
+** 連絡先： 琉球大学情報工学科 河野 真治  mime/X0208 support
+** （E-Mail Address: kono@ie.u-ryukyu.ac.jp）
+** 連絡先： COW for DOS & Win16 & Win32 & OS/2
+** （E-Mail Address: GHG00637@niftyserve.or.p）
 **
-**    ���̃\�[�X�̂����Ȃ镡�ʁC���ρC�C�����������܂��B�������A
-**    ���̍ۂɂ́A�N���v���������������̕������c�����ƁB
-**    �Ĕz�z��G���̕t�^�Ȃǂ̖₢���킹���K�v����܂���B
-**    �c�����p����L�ɔ����Ȃ��͈͂ŋ����܂��B
-**    �o�C�i���̔z�z�̍ۂɂ�version message��ۑ����邱�Ƃ������Ƃ��܂��B
-**    ���̃v���O�����ɂ��Ă͓��ɉ��̕ۏ؂����Ȃ��A�������炸�B
+**    このソースのいかなる複写，改変，修正も許諾します。ただし、
+**    その際には、誰が貢献したを示すこの部分を残すこと。
+**    再配布や雑誌の付録などの問い合わせも必要ありません。
+**    営利利用も上記に反しない範囲で許可します。
+**    バイナリの配布の際にはversion messageを保存することを条件とします。
+**    このプログラムについては特に何の保証もしない、悪しからず。
 **
 **    Everyone is permitted to do anything on this program 
 **    including copying, modifying, improving,
@@ -248,7 +248,7 @@ print_guessed_codeW (filename)
 #endif /*UNICODESUPPORT*/
 
 /**
- ** �p�b�`�����
+ ** パッチ制作者
  **  void@merope.pleiades.or.jp (Kusakabe Youichi)
  **  NIDE Naoyuki <nide@ics.nara-wu.ac.jp>
  **  ohta@src.ricoh.co.jp (Junn Ohta)
@@ -388,7 +388,7 @@ int findspace(const char* str)
 	}
 	return find_n;
 }
-// �I�v�V������ �󔒂ŋ�؂��Ă���ꍇ�� options �𕡐��Ăяo��
+// オプションが 空白で区切られている場合に options を複数呼び出す
 void callOptions()
 {
 	char *work = strdup(optStr0);
@@ -401,12 +401,12 @@ void callOptions()
 	int i = 0;
 	while (i < len)
 	{
-		// ������T��
+		// 文字を探す
 		if (work[i] != '\0') {
-			// options �Ăяo��
+			// options 呼び出し
 			options(&work[i]);
 
-			// �����̏I�[��T��
+			// 文字の終端を探す
 			while (work[i] != '\0' && i < len) {
 				i++;
 			}
@@ -418,9 +418,9 @@ void callOptions()
 	free(work);
 }
 
-// �v���Z�X�N�����ɏ����l�ɐݒ肳���l�������ݒ肷��B
-// dll ���g�����R�[�h�ϊ��́A�t���O�ϐ������������ꂸ��
-// �\�z�O�̓���������ꍇ�����錻�ۂ̏C���p
+// プロセス起動時に初期値に設定される値を初期設定する。
+// dll を使ったコード変換は、フラグ変数が初期化されずに
+// 予想外の動きをする場合がある現象の修正用
 void reinit_dll()
 {
 #ifdef UTF8_INPUT_ENABLE
@@ -435,7 +435,7 @@ void options0(void)
     reinit();
 	reinit_dll();
     if ( optStr0 != NULL ) {
-		// option �̒��� �󔒂��������ꍇ options �𕪊����ČĂяo��
+		// option の中に 空白があった場合 options を分割して呼び出す
 		if (findspace(optStr0) > 0) {
 			callOptions();
 		}
@@ -531,7 +531,7 @@ void CALLBACK ToMime(LPSTR outStr ,LPCSTR inStr)
 int CALLBACK NkfGetKanjiCode(VOID)
 {
     int iCode=0;
-    /* if(iconv == s_iconv)iCode=0; */ /* 0:�V�t�gJIS */
+    /* if(iconv == s_iconv)iCode=0; */ /* 0:シフトJIS */
     if(iconv == w_iconv)iCode=3; /* UTF-8 */
     else if(iconv == w_iconv16){
         if(input_endian == ENDIAN_BIG)iCode=5; /* 5:UTF-16BE */
@@ -878,7 +878,7 @@ unsigned char buff[65536];
 unsigned char buff2[65536];
 unsigned char buff3[65536];
 unsigned char buff4[65536];
-char *code[] = {"�V�t�gJIS","EUC","ISO-2022-JP","UTF-8","UTF-16LE","UTF-16BE"};
+char *code[] = {"シフトJIS","EUC","ISO-2022-JP","UTF-8","UTF-16LE","UTF-16BE"};
 
     int n;
     BOOL sts;
