@@ -13,7 +13,7 @@ prefix = /usr/local
 PYTHON2 = python
 PYTHON3 = python
 
-.PHONY: clean install test test-library tar shar
+.PHONY: clean install test test-library test-linux-so-tls tar shar
 
 all : nkf libnkf32.so
 
@@ -33,18 +33,30 @@ utf8tbl.o : utf8tbl.c utf8tbl.h config.h
 	$(CC) $(CFLAGS) -c utf8tbl.c
 
 clean:
-	-$(RM) nkf.o nkf nkf.exe libnkf32.so nkf32so.o test_library_options nkf.in nkf.out  nkf-$(VERSION) *~ *.bad utf8tbl.o
+	-$(RM) nkf.o nkf nkf.exe libnkf32.so nkf32so.o test_library_options nkf32so_fileconvert_test nkf.in nkf.out  nkf-$(VERSION) *~ *.bad utf8tbl.o
 	cd NKF.mod; if [ -f Makefile ]; then make clean; fi
 
-test:	nkf libnkf32.so test_library_options
+test:	nkf libnkf32.so test_library_options nkf32so_fileconvert_test test-linux-so-tls
 	$(PERL) test.pl
 	LD_LIBRARY_PATH=. ./test_library_options
+	LD_LIBRARY_PATH=. ./nkf32so_fileconvert_test
 
 test-library: libnkf32.so test_library_options
 	LD_LIBRARY_PATH=. ./test_library_options
 
 test_library_options: test_library_options.c nkf32so.h libnkf32.so
 	$(CC) $(CFLAGS) -o $@ test_library_options.c -L. -lnkf32
+
+nkf32so_fileconvert_test: nkf32so_fileconvert_test.c libnkf32.so
+	$(CC) $(CFLAGS) -o $@ nkf32so_fileconvert_test.c -L. -lnkf32
+
+test-linux-so-tls: libnkf32.so
+	@for symbol in guessbuffA ubuff ulen uret; do \
+		if ! readelf --syms --wide libnkf32.so | awk -v symbol="$$symbol" '$$4 == "TLS" && $$8 == symbol { found = 1 } END { exit !found }'; then \
+			echo "$$symbol is not a TLS symbol"; \
+			exit 1; \
+		fi; \
+	done
 
 perl:
 	( cd NKF.mod ; \

@@ -404,7 +404,7 @@ void CALLBACK ToMime(LPSTR outStr ,LPCSTR inStr)
 #endif /*TOMIME*/
 
 #ifdef GETKANJICODE
-int CALLBACK NkfGetKanjiCode(VOID)
+int CALLBACK NkfGetKanjiCode(void)
 {
     int iCode=0;
     /* if(iconv == s_iconv)iCode=0; */ /* 0:シフトJIS */
@@ -450,9 +450,9 @@ void CALLBACK NkfFileConvert1(LPCSTR fName)
                      noutmax = -1;
                      std_putc_mode = 1;
                      kanji_convert(fin);
-                     fclose(fin);
+                     fclose(fout);
                  }
-                 fclose(fout);
+                 fclose(fin);
              }
         DeleteFile(tempfname);
         }
@@ -519,10 +519,10 @@ BOOL WINAPI NkfFileConvert1Safe(LPCSTR fName,DWORD nBufferLength /*in TCHARs*/)
                 noutmax = -1;
                 std_putc_mode = 1;
                 kanji_convert(fin);
-                fclose(fin);
                 ret = TRUE;
+                fclose(fout);
             }
-            fclose(fout);
+            fclose(fin);
         }
         unlink(tempfname);
     }
@@ -588,10 +588,10 @@ BOOL WINAPI NkfFileConvert2Safe(LPCSTR fInName,DWORD fInBufferLength /*in TCHARs
             noutmax = -1;
             std_putc_mode = 1;
             kanji_convert(fin);
-            fclose(fin);
             ret = TRUE;
+            fclose(fout);
         }
-        fclose(fout);
+        fclose(fin);
     }
     return ret;
 }
