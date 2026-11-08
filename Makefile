@@ -13,7 +13,7 @@ prefix = /usr/local
 PYTHON2 = python
 PYTHON3 = python
 
-.PHONY: clean install test tar shar
+.PHONY: clean install test test-linux-so-tls tar shar
 
 all : nkf libnkf32.so
 
@@ -36,12 +36,20 @@ clean:
 	-$(RM) nkf.o nkf nkf.exe libnkf32.so nkf32so.o nkf32so_test nkf.in nkf.out  nkf-$(VERSION) *~ *.bad utf8tbl.o
 	cd NKF.mod; if [ -f Makefile ]; then make clean; fi
 
-test:	nkf nkf32so_test
+test:	nkf test-linux-so-tls nkf32so_test
 	$(PERL) test.pl
 	./nkf32so_test
 
 nkf32so_test : nkf32so.o utf8tbl.o nkf32so_test.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o nkf32so_test nkf32so_test.c nkf32so.o utf8tbl.o
+
+test-linux-so-tls: libnkf32.so
+	@for symbol in guessbuffA ubuff ulen uret; do \
+		if ! readelf --syms --wide libnkf32.so | awk -v symbol="$$symbol" '$$4 == "TLS" && $$8 == symbol { found = 1 } END { exit !found }'; then \
+			echo "$$symbol is not a TLS symbol"; \
+			exit 1; \
+		fi; \
+	done
 
 perl:
 	( cd NKF.mod ; \
