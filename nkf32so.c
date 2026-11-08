@@ -444,9 +444,9 @@ void CALLBACK NkfFileConvert1(LPCSTR fName)
                      noutmax = -1;
                      std_putc_mode = 1;
                      kanji_convert(fin);
-                     fclose(fin);
+                     fclose(fout);
                  }
-                 fclose(fout);
+                 fclose(fin);
              }
         DeleteFile(tempfname);
         }
@@ -640,10 +640,10 @@ BOOL WINAPI NkfFileConvert2Safe(LPCSTR fInName,DWORD fInBufferLength /*in TCHARs
             noutmax = -1;
             std_putc_mode = 1;
             kanji_convert(fin);
-            fclose(fin);
             ret = TRUE;
+            fclose(fout);
         }
-        fclose(fout);
+        fclose(fin);
     }
     return ret;
 }

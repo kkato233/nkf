@@ -574,9 +574,9 @@ void CALLBACK NkfFileConvert1(LPCSTR fName)
                      noutmax = -1;
                      std_putc_mode = 1;
                      kanji_convert(fin);
-                     fclose(fin);
+                     fclose(fout);
                  }
-                 fclose(fout);
+                 fclose(fin);
              }
         DeleteFile(tempfname);
         }
@@ -625,10 +625,10 @@ BOOL WINAPI NkfFileConvert1SafeA(LPCSTR fName,DWORD nBufferLength /*in TCHARs*/)
                     noutmax = -1;
                     std_putc_mode = 1;
                     kanji_convert(fin);
-                    fclose(fin);
                     ret = TRUE;
+                    fclose(fout);
                 }
-                fclose(fout);
+                fclose(fin);
             }
             DeleteFileA(tempfname);
         }
@@ -678,10 +678,10 @@ BOOL WINAPI NkfFileConvert1SafeW(LPCWSTR fName,DWORD nBufferLength /*in TCHARs*/
                     noutmax = -1;
                     std_putc_mode = 1;
                     kanji_convert(fin);
-                    fclose(fin);
                     ret = TRUE;
+                    fclose(fout);
                 }
-                fclose(fout);
+                fclose(fin);
             }
             DeleteFileW(tempfname);
         }
@@ -752,10 +752,10 @@ BOOL WINAPI NkfFileConvert2SafeA(LPCSTR fInName,DWORD fInBufferLength /*in TCHAR
             noutmax = -1;
             std_putc_mode = 1;
             kanji_convert(fin);
-            fclose(fin);
             ret = TRUE;
+            fclose(fout);
         }
-        fclose(fout);
+        fclose(fin);
     }
     return ret;
 }
@@ -795,10 +795,10 @@ BOOL WINAPI NkfFileConvert2SafeW(LPCWSTR fInName,DWORD fInBufferLength /*in TCHA
             noutmax = -1;
             std_putc_mode = 1;
             kanji_convert(fin);
-            fclose(fin);
             ret = TRUE;
+            fclose(fout);
         }
-        fclose(fout);
+        fclose(fin);
     }
     return ret;
 #else /*UNICODESUPPORT*/
