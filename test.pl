@@ -16,6 +16,9 @@
 # nkf PDS version passes Basic Conversion tests  using "nkf -iB -oB "
 #
 
+use utf8;
+use Encode qw(decode FB_CROAK);
+
 if ($ARGV[0]) {
     $nkf = $ARGV[0];
 } else {
@@ -27,6 +30,37 @@ if ($ARGV[0]) {
 
 $error_count = 0;
 $diff=1;
+
+sub source_encoding_test {
+    my $file = 'nkf32dll.c';
+    open my $fh, '<:raw', $file or die "Cannot open $file: $!\n";
+    my $bytes = do { local $/; <$fh> };
+    defined $bytes or die "Cannot read $file: $!\n";
+    close $fh or die "Cannot close $file: $!\n";
+
+    my $has_bom = substr($bytes, 0, 3) eq "\xEF\xBB\xBF";
+    my $source = eval { decode('UTF-8', $bytes, FB_CROAK) };
+    die "$file is not valid UTF-8: $@" if $@;
+    die "$file contains a Unicode replacement character\n"
+        if index($source, "\x{FFFD}") >= 0;
+
+    my %expected = (
+        'version comment' => 'こちらのバージョンも更新してください。',
+        'copyright notice' => '連絡先： （株）富士通研究所　ソフト３研　市川　至',
+        'license notice' => 'このソースのいかなる複写，改変，修正も許諾します。ただし、',
+        'patch credits' => 'パッチ制作者',
+        'options comment' => 'オプションが 空白で区切られている場合に options を複数呼び出す',
+        'encoding label' => 'char *code[] = {"シフトJIS","EUC","ISO-2022-JP","UTF-8","UTF-16LE","UTF-16BE"};',
+    );
+    for my $description (sort keys %expected) {
+        die "$file is missing its $description\n"
+            if index($source, $expected{$description}) < 0;
+    }
+    die "$file needs a UTF-8 BOM for MSVC\n" unless $has_bom;
+    print "Windows DLL source encoding ... Ok\n";
+}
+
+source_encoding_test();
 
 # &library_test0();
 sub test {
