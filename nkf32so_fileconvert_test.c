@@ -4,6 +4,7 @@
 #include <unistd.h>
 
 #define FILECONVERT2
+#define GETKANJICODE
 #include "nkf32so.h"
 
 int main(void)
@@ -13,8 +14,11 @@ int main(void)
     char missing_output[sizeof directory + 20];
     char output[sizeof directory + 8];
     FILE *file = NULL;
+    int kanji_code;
     int result = 1;
 
+    kanji_code = NkfGetKanjiCode();
+    if (kanji_code < 0 || kanji_code > 5) return result;
     if (mkdtemp(directory) == NULL) return result;
     snprintf(input, sizeof input, "%s/input", directory);
     snprintf(missing_output, sizeof missing_output, "%s/missing/output", directory);
