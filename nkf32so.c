@@ -444,9 +444,9 @@ void CALLBACK NkfFileConvert1(LPCSTR fName)
                      noutmax = -1;
                      std_putc_mode = 1;
                      kanji_convert(fin);
-                     fclose(fin);
+                     fclose(fout);
                  }
-                 fclose(fout);
+                 fclose(fin);
              }
         DeleteFile(tempfname);
         }
@@ -513,10 +513,10 @@ BOOL WINAPI NkfFileConvert1Safe(LPCSTR fName,DWORD nBufferLength /*in TCHARs*/)
                 noutmax = -1;
                 std_putc_mode = 1;
                 kanji_convert(fin);
-                fclose(fin);
                 ret = TRUE;
+                fclose(fout);
             }
-            fclose(fout);
+            fclose(fin);
         }
         unlink(tempfname);
     }
@@ -582,10 +582,10 @@ BOOL WINAPI NkfFileConvert2Safe(LPCSTR fInName,DWORD fInBufferLength /*in TCHARs
             noutmax = -1;
             std_putc_mode = 1;
             kanji_convert(fin);
-            fclose(fin);
             ret = TRUE;
+            fclose(fout);
         }
-        fclose(fout);
+        fclose(fin);
     }
     return ret;
 }
@@ -644,4 +644,3 @@ BOOL WINAPI NkfUsage(LPSTR outStr,DWORD nBufferLength /*in Bytes*/,LPDWORD lpByt
 void Init() {
     reinit();
 }
-
